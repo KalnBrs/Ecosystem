@@ -18,6 +18,6 @@ export class Event extends Node {
     public location?: string,
     public recurrenceRule?: RecurrenceRule
   ) {
-    super(id, title, description, "event" as NodeType, createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "event", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
   }
 }

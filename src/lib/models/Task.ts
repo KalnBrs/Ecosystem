@@ -20,6 +20,6 @@ export class Task extends Node {
     public actualDuration?: number, // In minutes
     public projectId?: string
   ) {
-    super(id, title, description, "task" as NodeType, createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "task", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
   }
 }

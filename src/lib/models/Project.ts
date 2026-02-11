@@ -17,6 +17,6 @@ export class Project extends Node {
     public progress: number = 0, // 0-100, derived from child tasks
     public childNodeIds: string[] = []
   ) {
-    super(id, title, description, "project" as NodeType, createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "project", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
   }
 }

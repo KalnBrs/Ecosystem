@@ -1,1 +1,1 @@
-export * from './RecuranceRule'
+export * from './RecurrenceRule'

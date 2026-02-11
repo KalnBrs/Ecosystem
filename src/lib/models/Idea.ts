@@ -14,6 +14,6 @@ export class Idea extends Node {
     public content: string, // Rich text
     public pinned: boolean = false
   ) {
-    super(id, title, description, "idea" as NodeType, createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "idea", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
   }
 }
