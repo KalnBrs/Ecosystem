@@ -1,14 +1,25 @@
-import { Node } from "./Node";
+import { Node, NodeType, NodeStatus } from "./Node";
+import { RecurrenceRule } from "@/@types";
 
 export class Task extends Node {
-  constructor (
+  constructor(
     id: string,
     title: string,
     description: string,
-    createdAd: Date,
+    createdAt: Date,
     updatedAt: Date,
-    public isDone: boolean,
+    userId: string,
+    tags: string[],
+    linkedNodeIds: string[],
+    status: NodeStatus,
+    public dueDate?: Date,
+    public priority: "low" | "medium" | "high" = "medium",
+    public completed: boolean = false,
+    public recurrenceRule?: RecurrenceRule,
+    public estimatedDuration?: number, // In minutes
+    public actualDuration?: number, // In minutes
+    public projectId?: string
   ) {
-    super(id, title, description, createdAd, updatedAt);
+    super(id, title, description, "task" as NodeType, createdAt, updatedAt, userId, tags, linkedNodeIds, status);
   }
 }
