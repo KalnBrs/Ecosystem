@@ -41,7 +41,14 @@ The PostgreSQL schema stores type-specific fields in a `JSONB data` column (see 
 ### Base Node (`src/lib/models/Node.ts`)
 
 ```typescript
-export type NodeType = "task" | "event" | "project" | "note" | "idea" | "custom"
+export type NodeType =
+  | "task"
+  | "event"
+  | "project"
+  | "note"
+  | "idea"
+  | "area"
+  | "custom"
 export type NodeStatus = "active" | "archived" | "deleted"
 
 export class Node {
@@ -57,6 +64,7 @@ export class Node {
     /** Derived at read time from node_links — never stored in nodes.data */
     public linkedNodeIds: string[],
     public status: NodeStatus,
+    public color?: string, // optional hex/css color for UI labeling
   ) {}
 }
 ```
@@ -126,7 +134,22 @@ export class Project extends Node {
 }
 ```
 
-> Note: `area` (e.g., "Work", "Personal") is stored as a `tag` or separate `area` field — TBD during DB schema finalization.
+> Note: Areas are first-class Nodes with `type: "area"`. A Project's parent Area is represented by including the Project's ID in the Area's `childNodeIds`. No separate `area` column is needed.
+
+#### Area (`src/lib/models/Area.ts`)
+
+```typescript
+export class Area extends Node {
+  constructor(
+    // base Node fields (including optional color)...
+    public childNodeIds: string[] = []   // IDs of Projects (or nested Areas) within this Area
+  )
+}
+```
+
+> Areas are the top level of the hierarchy: Area → Project → Nodes. `color` (inherited from base Node) is the primary visual differentiator between areas in the UI.
+
+---
 
 #### RecurrenceRule (`src/@types/RecurrenceRule.ts`)
 

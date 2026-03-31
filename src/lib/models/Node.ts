@@ -1,4 +1,4 @@
-export type NodeType = "task" | "event" | "project" | "note" | "idea" | "custom";
+export type NodeType = "task" | "event" | "project" | "note" | "idea" | "area" | "custom";
 export type NodeStatus = "active" | "archived" | "deleted";
 
 export class Node {
@@ -17,6 +17,7 @@ export class Node {
      * NodeService is responsible for populating this field on every read.
      */
     public linkedNodeIds: string[],
-    public status: NodeStatus
+    public status: NodeStatus,
+    public color?: string // Hexadecimal
   ) {}
 }

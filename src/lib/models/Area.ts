@@ -1,6 +1,6 @@
 import { Node, NodeStatus } from "./Node";
 
-export class Idea extends Node {
+export class Area extends Node {
   constructor(
     id: string,
     title: string,
@@ -11,9 +11,9 @@ export class Idea extends Node {
     tags: string[],
     linkedNodeIds: string[],
     status: NodeStatus,
-    public content: string, // Rich text
-    public pinned: boolean = false
+    color?: string,
+    public childNodeIds: string[] = []
   ) {
-    super(id, title, description, "idea", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "area", createdAt, updatedAt, userId, tags, linkedNodeIds, status, color);
   }
 }

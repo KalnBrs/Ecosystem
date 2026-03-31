@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  passwordHash String?  @map("password_hash") @db.VarChar(255)
+  name         String?  @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  nodes        Node[]
+
+  @@map("users")
+}
+
+model Node {
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String     @map("user_id") @db.Uuid
+  type          NodeType
+  title         String     @db.VarChar(255)
+  description   String?
+  status        NodeStatus @default(active)
+  tags          String[]   @default([])
+  data          Json?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  outgoingLinks NodeLink[] @relation("SourceNode")
+  incomingLinks NodeLink[] @relation("TargetNode")
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_nodes_user_id")
+  @@index([type], map: "idx_nodes_type")
+  @@index([status], map: "idx_nodes_status")
+  @@index([createdAt], map: "idx_nodes_created")
+  @@map("nodes")
+}
+
+model NodeLink {
+  id           String   @id @default(uuid()) @db.Uuid
+  sourceNodeId String   @map("source_node_id") @db.Uuid
+  targetNodeId String   @map("target_node_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  sourceNode   Node     @relation("SourceNode", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNode   Node     @relation("TargetNode", fields: [targetNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceNodeId, targetNodeId])
+  @@index([sourceNodeId], map: "idx_node_links_source")
+  @@index([targetNodeId], map: "idx_node_links_target")
+  @@map("node_links")
+}
+
+enum NodeType {
+  task
+  event
+  idea
+  note
+  project
+  area
+  custom
+}
+
+enum NodeStatus {
+  active
+  archived
+  deleted
+}
