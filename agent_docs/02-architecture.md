@@ -20,7 +20,7 @@
 │   /api/nodes   /api/projects   /api/search   /api/auth  ...    │
 ├─────────────────────────────────────────────────────────────────┤
 │                   Database Layer (PostgreSQL)                    │
-│   nodes   projects   node_links   users   sessions              │
+│   nodes   node_links   users                                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -33,6 +33,8 @@
 The TypeScript models in `src/lib/models/` use **class inheritance** — every Node subtype extends the base `Node` class and exposes its type-specific fields as direct constructor parameters. This is the source of truth for the shape of data in the application.
 
 The PostgreSQL schema stores type-specific fields in a `JSONB data` column (see [Database Schema](#database-schema-overview)). The service layer is responsible for serializing class instances to/from that column.
+
+**`linkedNodeIds` — Option A (derived from `node_links`):** `linkedNodeIds` on the `Node` class is a **computed field**. It is never stored in `nodes.data`. On every read, `NodeService` JOINs the `node_links` table and populates `linkedNodeIds` in-memory. The `node_links` join table is the single source of truth for all link relationships. This gives referential integrity (FK + `ON DELETE CASCADE`), prevents orphaned IDs, and enables efficient reverse-link queries (`idx_node_links_target`).
 
 ---
 
@@ -52,6 +54,7 @@ export class Node {
     public updatedAt: Date,
     public userId: string,
     public tags: string[],
+    /** Derived at read time from node_links — never stored in nodes.data */
     public linkedNodeIds: string[],
     public status: NodeStatus,
   ) {}
@@ -329,6 +332,9 @@ Projects track `progress` (0–100) derived from `childNodeIds` task completion.
 
 **Stack:** NextAuth.js — email/password + OAuth (Google, GitHub)
 
+**Session Strategy: JWT (stateless)**
+NextAuth is configured with `session: { strategy: "jwt" }`. Sessions are stored in a signed `HttpOnly` cookie using `NEXTAUTH_SECRET` as the signing key — no database `sessions` table is needed or created. This is the correct choice for `CredentialsProvider`: the Prisma DB adapter does not create an `account` record for credentials-based logins, making the JWT strategy the standard and simpler approach. If session revocation becomes a requirement in the future, a custom `jti` blocklist can be added. See [NextAuth credentials + JWT docs](https://next-auth.js.org/providers/credentials#notes).
+
 **Redux State:**
 
 ```typescript
@@ -396,6 +402,7 @@ CREATE TABLE nodes (
   description TEXT,
   status      VARCHAR(50) DEFAULT 'active'
                 CHECK (status IN ('active', 'archived', 'deleted')),
+  tags        TEXT[] DEFAULT '{}',    -- mirrors Node.tags string[]
   data        JSONB,                  -- type-specific fields (serialized from class)
   created_at  TIMESTAMP DEFAULT NOW(),
   updated_at  TIMESTAMP DEFAULT NOW()
@@ -404,29 +411,9 @@ CREATE TABLE nodes (
 CREATE INDEX idx_nodes_user_id   ON nodes(user_id);
 CREATE INDEX idx_nodes_type      ON nodes(type);
 CREATE INDEX idx_nodes_status    ON nodes(status);
+CREATE INDEX idx_nodes_tags      ON nodes USING gin(tags);  -- array membership queries
 CREATE INDEX idx_nodes_data      ON nodes USING gin(data);  -- JSONB index
 CREATE INDEX idx_nodes_created   ON nodes(created_at);
-```
-
-### `projects`
-
-```sql
-CREATE TABLE projects (
-  id             UUID PRIMARY KEY,
-  user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  title          VARCHAR(255) NOT NULL,
-  description    TEXT,
-  area           VARCHAR(100),        -- e.g., 'Work', 'Personal'
-  color          VARCHAR(7),          -- hex color for UI
-  project_status VARCHAR(50) DEFAULT 'active',
-  start_date     TIMESTAMP,
-  target_date    TIMESTAMP,
-  progress       SMALLINT DEFAULT 0,  -- 0–100
-  created_at     TIMESTAMP DEFAULT NOW(),
-  updated_at     TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX idx_projects_user_id ON projects(user_id);
 ```
 
 ### `node_links`
@@ -444,19 +431,9 @@ CREATE INDEX idx_node_links_source ON node_links(source_node_id);
 CREATE INDEX idx_node_links_target ON node_links(target_node_id);
 ```
 
-### `sessions`
+### `sessions` — not used
 
-```sql
-CREATE TABLE sessions (
-  id         UUID PRIMARY KEY,
-  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  token      VARCHAR(255) UNIQUE,
-  expires_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX idx_sessions_user_id ON sessions(user_id);
-```
+> **NextAuth JWT strategy is in use.** Sessions are stored in a signed `HttpOnly` cookie — no `sessions` table is created or needed. If you switch to the Prisma DB adapter in the future, NextAuth will generate its own `sessions`, `accounts`, and `verification_tokens` tables automatically; do not create them manually.
 
 ---
 
@@ -576,7 +553,7 @@ User right-clicks Idea → "Convert to Task"
   → Preserve: id, title, description, userId, tags, linkedNodeIds
   → Discard: content, pinned
   → Initialize: priority = "medium", completed = false
-  → POST /api/nodes/convert
+  → PUT /api/nodes/convert
   → Prisma UPDATE nodes SET type = "task", data = { priority, completed, ... }
   → Redux state updated
   → All views show the Node as a Task
