@@ -1,4 +1,4 @@
-import { Node, NodeType, NodeStatus } from "./Node";
+import { Node, NodeStatus } from "./Node";
 import { RecurrenceRule } from "@/@types";
 
 export class Task extends Node {
