@@ -11,6 +11,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        name: {label: "Name", type: "name"}
       },
       async authorize(credentials): Promise<{ id: string; email: string } | null> {
         const parsed = z
@@ -19,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         if (!parsed.success) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
+          where: { email: parsed.data.email }
         });
         if (!user || !user.passwordHash) return null;
 
@@ -32,6 +33,9 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" as const },
+  pages: {
+    signIn: "/login"
+  }
 };
 
 export default NextAuth(authOptions);

@@ -2,6 +2,19 @@ import { User } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 
 async function signUp(user: User): Promise<User | null> {
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { name: user.name },
+        { email: user.email },
+      ],
+    },
+  });
+
+  if (existing) {
+    return null;
+  }
+
   const retUser: User | null = await prisma.user.create({
     data: {
       name: user.name,

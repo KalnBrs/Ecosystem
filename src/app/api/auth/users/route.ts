@@ -26,6 +26,13 @@ export async function POST(request: Request) {
       updatedAt: new Date()
     }
     const retUser: User | null = await signUp(user)
+
+    if (retUser == null) {
+      return NextResponse.json(
+        {message: "User already exists with this name or email"},
+        {status: 409}
+      )
+    }
     
     return NextResponse.json(
       {message: 'User created successfully', data: retUser},
