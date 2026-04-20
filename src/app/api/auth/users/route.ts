@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { email } from 'zod';
 import bcrypt from "bcrypt";
 
 import { NextResponse } from 'next/server';
@@ -33,9 +33,17 @@ export async function POST(request: Request) {
         {status: 409}
       )
     }
+
+    const sanitedUser = {
+      id: retUser.id,
+      email: retUser.email,
+      name: retUser.name,
+      createdAt: retUser.createdAt,
+      updatedAt: retUser.updatedAt
+    }
     
     return NextResponse.json(
-      {message: 'User created successfully', data: retUser},
+      {message: 'User created successfully', data: sanitedUser},
       {status: 201}
     )
   } catch (error: unknown) {
