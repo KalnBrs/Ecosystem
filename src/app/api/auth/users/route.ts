@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   } catch (error: unknown) {
     if (error instanceof Error) {
       return NextResponse.json(
-        {message: 'An error occured while signing up: ' + error.message},
+        {message: 'An error occurred while signing up: ' + error.message},
         {status: 500}
       )
     } else {
