@@ -8,20 +8,20 @@ import signUp from '@/services/AuthService';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-
     const parsed = z
       .object({ email: z.email(), password: z.string().min(6).max(255), name: z.string().min(4).max(255) })
-      .safeParse(body)
+      .safeParse(await request.json())
     if (!parsed.success) {
       return NextResponse.json({ message: 'Invalid input' }, { status: 400 })
     }
+
+    const { name, email, password } = parsed.data;
     
     const user: User = { 
       id: crypto.randomUUID(),
-      name: body.name, 
-      email: body.email, 
-      passwordHash: await bcrypt.hash(body.password, 10),
+      name, 
+      email, 
+      passwordHash: await bcrypt.hash(password, 10),
       createdAt: new Date(),
       updatedAt: new Date()
     }
