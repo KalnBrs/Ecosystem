@@ -1,7 +1,13 @@
 import { User } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 
-async function signUp(user: User): Promise<User | null> {
+type UserPayload = {
+  name: string,
+  email: string,
+  passwordHash: string
+}
+
+async function signUp(user: UserPayload): Promise<User | null> {
   const existing = await prisma.user.findFirst({
     where: {
       OR: [
@@ -19,9 +25,7 @@ async function signUp(user: User): Promise<User | null> {
     data: {
       name: user.name,
       email: user.email,
-      passwordHash: user.passwordHash,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      passwordHash: user.passwordHash
     }
   })
 
