@@ -4,7 +4,13 @@ import { Pool } from "pg"
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-function createPrismaClient(): PrismaClient {
+/**
+ * Instantiates a new {@link PrismaClient} backed by a `pg` connection pool.
+ * Uses the `DATABASE_URL` environment variable as the connection string.
+ *
+ * @returns A configured {@link PrismaClient} instance.
+ */
+export function createPrismaClient(): PrismaClient {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
   })

@@ -2,6 +2,11 @@
 
 import { signIn } from "next-auth/react"
 
+/**
+ * Handles login form submission by invoking the NextAuth credentials provider.
+ *
+ * @param formData - The submitted form data containing `email` and `password`.
+ */
 async function formSubmit(formData: FormData) {
   const response = await signIn("credentials", {
     email: formData.get("email") as string,
@@ -11,6 +16,9 @@ async function formSubmit(formData: FormData) {
   console.log(response)
 }
 
+/**
+ * Login page component. Renders an email/password sign-in form.
+ */
 export default function Home() {
   return (
     <div>

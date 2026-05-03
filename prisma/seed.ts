@@ -1,11 +1,10 @@
 import 'dotenv/config'; 
-import { PrismaClient } from "../src/generated/prisma";
-import { PrismaPg } from '@prisma/adapter-pg';
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
+import { PrismaClient } from "@/generated/prisma"
+import { createPrismaClient } from '@/lib/prisma';
 
-const prisma = new PrismaClient({ adapter });
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
+
+const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
 async function main() {
   console.log("Start Seeding....");

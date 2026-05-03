@@ -1,4 +1,4 @@
-import z, { email } from 'zod';
+import z from 'zod';
 import bcrypt from "bcrypt";
 
 import { NextResponse } from 'next/server';
@@ -6,6 +6,18 @@ import { User } from '@/generated/prisma';
 
 import signUp from '@/services/AuthService';
 
+/**
+ * POST /api/auth/users
+ *
+ * Creates a new user account. Validates the request body, hashes the
+ * password, and delegates persistence to {@link signUp}.
+ *
+ * @param request - The incoming HTTP request containing `name`, `email`,
+ *   and `password` fields as JSON.
+ * @returns `201` with the sanitised user object on success; `400` for
+ *   invalid input; `409` if the name or email is already taken; `500`
+ *   on unexpected errors.
+ */
 export async function POST(request: Request) {
   try {
     const parsed = z

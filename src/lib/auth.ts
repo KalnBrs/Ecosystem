@@ -13,6 +13,13 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
         name: {label: "Name", type: "name"}
       },
+      /**
+       * Validates the supplied credentials against the database.
+       *
+       * @param credentials - The raw credential fields from the sign-in form.
+       * @returns An object containing the user's `id` and `email` on success,
+       *   or `null` if validation fails.
+       */
       async authorize(credentials): Promise<{ id: string; email: string } | null> {
         const parsed = z
           .object({ email: z.email(), password: z.string().min(6) })

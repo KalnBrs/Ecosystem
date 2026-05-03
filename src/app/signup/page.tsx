@@ -1,5 +1,12 @@
 "use client"
 
+/**
+ * Handles sign-up form submission by calling the users API endpoint.
+ *
+ * @param formData - The submitted form data containing `name`, `email`,
+ *   and `password`.
+ * @throws {Error} If the API request fails.
+ */
 async function handleSubmit(formData: FormData) {
   const response = await fetch("/api/auth/users", {
     method: "POST",
@@ -18,6 +25,10 @@ async function handleSubmit(formData: FormData) {
   console.log("Created your user");
 }
 
+/**
+ * Sign-up page component. Renders a registration form with name, email,
+ * and password fields.
+ */
 export default function Home() {
   return (
     <div>
