@@ -1,14 +1,9 @@
 "use client"
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const isClient = typeof window !== 'undefined';
-
-if (!isClient) {
-  return null;
-} // Prevent rendering during SSR
 
   return (
     <div>
