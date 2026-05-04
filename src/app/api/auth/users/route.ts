@@ -29,10 +29,10 @@ export async function POST(request: Request) {
 
     const { name, email, password } = parsed.data;
     
-    const user: User = { 
+    const user = { 
       id: crypto.randomUUID(),
-      name, 
-      email, 
+      name: name, 
+      email: email, 
       passwordHash: await bcrypt.hash(password, 10),
       createdAt: new Date(),
       updatedAt: new Date()
