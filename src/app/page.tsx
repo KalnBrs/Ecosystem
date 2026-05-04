@@ -3,7 +3,12 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
+  const isClient = typeof window !== 'undefined';
+
+if (!isClient) {
+  return null;
+} // Prevent rendering during SSR
 
   return (
     <div>
