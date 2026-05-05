@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "prisma/seed.ts", "src/lib/auth.ts"  ],
   "exclude": ["node_modules"]
 }

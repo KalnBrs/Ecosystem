@@ -1,22 +1,22 @@
 import { Node, NodeStatus } from "./Node";
 
 /**
- * Represents an idea node — a freeform note with rich-text content
- * that can be pinned for quick access.
+ * Represents an area of responsibility — a broad category used to group
+ * projects and other nodes.
  */
-export class Idea extends Node {
+export class Area extends Node {
   /**
    * @param id - Unique identifier inherited from {@link Node}.
-   * @param title - Display title of the idea.
-   * @param description - Brief summary of the idea.
+   * @param title - Display title of the area.
+   * @param description - Human-readable description.
    * @param createdAt - Creation timestamp.
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
    * @param linkedNodeIds - IDs of related nodes (populated at read time).
    * @param status - Lifecycle status.
-   * @param content - Rich-text body of the idea.
-   * @param pinned - Whether the idea is pinned for quick access; defaults to `false`.
+   * @param color - Optional hexadecimal color string (e.g. `#FF5733`).
+   * @param childNodeIds - IDs of nodes contained within this area; defaults to `[]`.
    */
   constructor(
     id: string,
@@ -28,9 +28,9 @@ export class Idea extends Node {
     tags: string[],
     linkedNodeIds: string[],
     status: NodeStatus,
-    public content: string, // Rich text
-    public pinned: boolean = false
+    color?: string,
+    public childNodeIds: string[] = []
   ) {
-    super(id, title, description, "idea", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "area", createdAt, updatedAt, userId, tags, linkedNodeIds, status, color);
   }
 }
