@@ -15,10 +15,13 @@ export class Node {
    * @param updatedAt - Timestamp of the most recent update.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels attached to the node.
-   * @param linkedNodeIds - IDs of related nodes, derived at read time by JOINing
-   *   the `node_links` table; never persisted in `nodes.data`.
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to, derived at read
+   *   time by JOINing `node_links` where `source_node_id = this.id`; never persisted
+   *   in `nodes.data`.
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node, derived at
+   *   read time by JOINing `node_links` where `target_node_id = this.id`; never
+   *   persisted in `nodes.data`.
    * @param status - Lifecycle status of the node.
-   * @param color - Optional hexadecimal color string (e.g. `#FF5733`).
    */
   constructor(
     public id: string,
@@ -29,8 +32,8 @@ export class Node {
     public updatedAt: Date,
     public userId: string,
     public tags: string[],
-    public linkedNodeIds: string[],
+    public outgoingLinkedNodeIds: string[],
+    public incomingLinkedNodeIds: string[],
     public status: NodeStatus,
-    public color?: string
   ) {}
 }

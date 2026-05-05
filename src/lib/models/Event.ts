@@ -13,7 +13,8 @@ export class Event extends Node {
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
-   * @param linkedNodeIds - IDs of related nodes (populated at read time).
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to (populated at read time).
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node (populated at read time).
    * @param status - Lifecycle status.
    * @param startTime - When the event begins.
    * @param endTime - When the event ends.
@@ -29,7 +30,8 @@ export class Event extends Node {
     updatedAt: Date,
     userId: string,
     tags: string[],
-    linkedNodeIds: string[],
+    outgoingLinkedNodeIds: string[],
+    incomingLinkedNodeIds: string[],
     status: NodeStatus,
     public startTime: Date,
     public endTime: Date,
@@ -37,6 +39,6 @@ export class Event extends Node {
     public location?: string,
     public recurrenceRule?: RecurrenceRule
   ) {
-    super(id, title, description, "event", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "event", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }
 }

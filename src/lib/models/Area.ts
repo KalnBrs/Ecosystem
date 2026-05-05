@@ -13,9 +13,9 @@ export class Area extends Node {
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
-   * @param linkedNodeIds - IDs of related nodes (populated at read time).
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to (populated at read time).
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node (populated at read time).
    * @param status - Lifecycle status.
-   * @param color - Optional hexadecimal color string (e.g. `#FF5733`).
    * @param childNodeIds - IDs of nodes contained within this area; defaults to `[]`.
    */
   constructor(
@@ -26,11 +26,11 @@ export class Area extends Node {
     updatedAt: Date,
     userId: string,
     tags: string[],
-    linkedNodeIds: string[],
+    outgoingLinkedNodeIds: string[],
+    incomingLinkedNodeIds: string[],
     status: NodeStatus,
-    color?: string,
     public childNodeIds: string[] = []
   ) {
-    super(id, title, description, "area", createdAt, updatedAt, userId, tags, linkedNodeIds, status, color);
+    super(id, title, description, "area", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }
 }

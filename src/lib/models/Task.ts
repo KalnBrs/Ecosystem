@@ -14,7 +14,8 @@ export class Task extends Node {
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
-   * @param linkedNodeIds - IDs of related nodes (populated at read time).
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to (populated at read time).
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node (populated at read time).
    * @param status - Lifecycle status.
    * @param dueDate - Optional date/time by which the task should be completed.
    * @param priority - Importance level; defaults to `"medium"`.
@@ -32,7 +33,8 @@ export class Task extends Node {
     updatedAt: Date,
     userId: string,
     tags: string[],
-    linkedNodeIds: string[],
+    outgoingLinkedNodeIds: string[],
+    incomingLinkedNodeIds: string[],
     status: NodeStatus,
     public dueDate?: Date,
     public priority: "low" | "medium" | "high" = "medium",
@@ -42,6 +44,6 @@ export class Task extends Node {
     public actualDuration?: number, // In minutes
     public projectId?: string
   ) {
-    super(id, title, description, "task", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "task", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }
 }
