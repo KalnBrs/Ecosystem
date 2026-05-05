@@ -1,4 +1,4 @@
-import { Node, NodeType, NodeStatus } from "./Node";
+import { Node, NodeStatus } from "./Node";
 
 /**
  * Represents a project node — a container that groups related tasks and other nodes.
