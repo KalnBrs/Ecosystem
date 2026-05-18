@@ -59,10 +59,7 @@ enum NodeType {
   task
   event
   idea
-  note
   project
-  area
-  custom
 }
 
 enum NodeStatus {

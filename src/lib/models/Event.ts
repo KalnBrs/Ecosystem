@@ -1,5 +1,4 @@
 import { Node, NodeStatus } from "./Node";
-import { RecurrenceRule } from "@/@types";
 
 /**
  * Represents a calendar event node with a defined time window.
@@ -20,7 +19,6 @@ export class Event extends Node {
    * @param endTime - When the event ends.
    * @param isAllDay - Whether the event spans the entire day; defaults to `false`.
    * @param location - Optional physical or virtual location string.
-   * @param recurrenceRule - Optional rule defining how the event repeats.
    */
   constructor(
     id: string,
@@ -36,8 +34,7 @@ export class Event extends Node {
     public startTime: Date,
     public endTime: Date,
     public isAllDay: boolean = false,
-    public location?: string,
-    public recurrenceRule?: RecurrenceRule
+    public location?: string
   ) {
     super(id, title, description, "event", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }

@@ -1,4 +1,4 @@
-export type NodeType = "task" | "event" | "project" | "note" | "idea" | "area" | "custom";
+export type NodeType = "task" | "event" | "idea" | "project";
 export type NodeStatus = "active" | "archived" | "deleted";
 
 /**
