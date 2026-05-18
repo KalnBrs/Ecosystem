@@ -38,6 +38,25 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email;
+        token.id = user.id;
+        token.name = user.name;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.email = (token.email as string) || "";
+        session.user.id = (token.id as string) || "";
+        session.user.name = (token.name as string) || "";
+      }
+      return session;
+    }
+  },
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" as const },
   pages: {
