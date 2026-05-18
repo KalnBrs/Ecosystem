@@ -114,7 +114,7 @@ export async function getNodeById(id: string, userId: string): Promise<Node | nu
   return hydrateNode(row);
 }
 
-export async function listNodes(userId: string, type?: string): Promise<Node[]> {
+export async function listNodes(userId: string, type: string | null): Promise<Node[]> {
   const rows = await prisma.node.findMany({
     where: {
       userId,
