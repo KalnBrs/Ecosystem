@@ -54,7 +54,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }>}
 ) {
   try {
-    const parsed = UpdateNodeSchema.parse(request.body);
+    const parsed = UpdateNodeSchema.parse(await request.json());
 
     const { id } = await params;
     const session = await getServerSession(authOptions)

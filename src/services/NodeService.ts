@@ -168,3 +168,53 @@ export async function deleteNode(id: string, userId: string): Promise<boolean> {
 
   return true;
 }
+
+// ─── Link management ─────────────────────────────────────────────────────────
+
+type LinkResult = { outgoingIds: string[]; incomingIds: string[] };
+
+// Shared: re-fetch the source node's current link arrays after a write.
+async function fetchLinkResult(sourceNodeId: string): Promise<LinkResult> {
+  const node = await prisma.node.findUniqueOrThrow({
+    where: { id: sourceNodeId },
+    include: nodeLinksInclude,
+  });
+  return {
+    outgoingIds: node.outgoingLinks.map((l) => l.targetNodeId),
+    incomingIds: node.incomingLinks.map((l) => l.sourceNodeId),
+  };
+}
+
+export async function createLink(
+  sourceNodeId: string,
+  targetNodeId: string,
+  userId: string,
+): Promise<LinkResult | null> {
+  // Verify the caller owns the source node before writing any link.
+  const sourceNode = await prisma.node.findFirst({ where: { id: sourceNodeId, userId } });
+  if (!sourceNode) return null;
+
+  // upsert handles the @@unique([sourceNodeId, targetNodeId]) constraint gracefully —
+  // creating the link if it doesn't exist, doing nothing if it already does.
+  await prisma.nodeLink.upsert({
+    where: { sourceNodeId_targetNodeId: { sourceNodeId, targetNodeId } },
+    create: { sourceNodeId, targetNodeId },
+    update: {},
+  });
+
+  return fetchLinkResult(sourceNodeId);
+}
+
+export async function deleteLink(
+  sourceNodeId: string,
+  targetNodeId: string,
+  userId: string,
+): Promise<LinkResult | null> {
+  // Verify the caller owns the source node before deleting any link.
+  const sourceNode = await prisma.node.findFirst({ where: { id: sourceNodeId, userId } });
+  if (!sourceNode) return null;
+
+  await prisma.nodeLink.deleteMany({ where: { sourceNodeId, targetNodeId } });
+
+  return fetchLinkResult(sourceNodeId);
+}

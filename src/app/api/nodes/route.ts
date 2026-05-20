@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const parsed = CreateNodeSchema.parse(request.body);
+    const parsed = CreateNodeSchema.parse(await request.json());
 
     const node = await createNode(parsed);
 
