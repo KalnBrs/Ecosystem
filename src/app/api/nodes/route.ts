@@ -43,6 +43,16 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions)
+    const userId = session?.user?.id
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized. Missing or invalid session." },
+        { status: 401 } 
+      )
+    }
+
     const parsed = CreateNodeSchema.parse(request.body);
 
     const node = await createNode(parsed);
