@@ -112,7 +112,7 @@ export async function DELETE(
       )
     }
 
-    const deleted = deleteNode(id, userId);
+    const deleted = await deleteNode(id, userId);
 
     if (!deleted) {
       return NextResponse.json(
@@ -121,10 +121,7 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json(
-      {message: `Successfully deleted the node with the id of ${id}`},
-      {status: 204}
-    )
+    return new NextResponse(null, {status: 204})
 
   } catch (error: unknown) {
       if (error instanceof Error) {
