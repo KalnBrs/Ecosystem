@@ -114,11 +114,11 @@ export async function getNodeById(id: string, userId: string): Promise<Node | nu
   return hydrateNode(row);
 }
 
-export async function listNodes(userId: string, type: string | null): Promise<Node[]> {
+export async function listNodes(userId: string, type: NodeType): Promise<Node[]> {
   const rows = await prisma.node.findMany({
     where: {
       userId,
-      ...(type != null ? { type: type as NodeType } : {}),
+      type,
       status: { not: PrismaNodeStatus.deleted },
     },
     include: nodeLinksInclude,
