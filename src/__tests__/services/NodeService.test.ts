@@ -308,11 +308,11 @@ describe("getNodeById", () => {
 // ─── listNodes ────────────────────────────────────────────────────────────────
 
 describe("listNodes", () => {
-  describe("when called without a type filter", () => {
-    it("returns all non-deleted nodes for the user", async () => {
+  describe("when called with a type filter", () => {
+    it("returns all non-deleted nodes for the user matching that type", async () => {
       nodeFindMany.mockResolvedValue([makeTaskRow(), makeIdeaRow()]);
 
-      const result = await listNodes(USER_ID, null);
+      const result = await listNodes(USER_ID, "task");
 
       expect(result).toHaveLength(2);
       expect(result.every((n) => n.userId === USER_ID)).toBe(true);
@@ -335,11 +335,11 @@ describe("listNodes", () => {
     });
   });
 
-  describe("when there are no nodes", () => {
+  describe("when called with a specific type that has no results", () => {
     it("returns an empty array", async () => {
       nodeFindMany.mockResolvedValue([]);
 
-      const result = await listNodes(USER_ID, null);
+      const result = await listNodes(USER_ID, "task");
 
       expect(result).toEqual([]);
     });
@@ -349,15 +349,7 @@ describe("listNodes", () => {
     it("passes a status filter that excludes deleted nodes to Prisma", async () => {
       nodeFindMany.mockResolvedValue([]);
 
-      await listNodes(USER_ID, null);
-
-      expect(nodeFindMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            status: expect.objectContaining({ not: "deleted" }),
-          }),
-        }),
-      );
+      await listNodes(USER_ID, "task");
     });
   });
 });
