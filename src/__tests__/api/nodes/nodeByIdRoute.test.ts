@@ -30,7 +30,7 @@ import { GET, PATCH, DELETE } from "@/app/api/nodes/[id]/route";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-jest.mock("next-auth", () => ({
+jest.mock("next-auth/next", () => ({
   getServerSession: jest.fn(),
 }));
 
@@ -44,7 +44,7 @@ jest.mock("@/services/NodeService", () => ({
 
 // ─── Mock accessors ───────────────────────────────────────────────────────────
 
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { getNodeById, updateNode, deleteNode } from "@/services/NodeService";
 
 const sessionMock = getServerSession as jest.Mock;

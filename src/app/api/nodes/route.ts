@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { CreateNodeSchema } from "@/lib/schemas/node.schema";
 import { createNode, listNodes } from "@/services/NodeService";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
