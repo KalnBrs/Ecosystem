@@ -158,11 +158,10 @@ describe("createNode", () => {
       const result = await createNode({
         type: "task",
         title: "Write tests",
-        userId: USER_ID,
         status: "active",
         tags: [],
         data: { isMorningPick: true, completed: false, actualDuration: 0 },
-      });
+      }, USER_ID);
 
       expect(result.type).toBe("task");
       expect(result.title).toBe("Write tests");
@@ -176,11 +175,10 @@ describe("createNode", () => {
       await createNode({
         type: "task",
         title: "My Task",
-        userId: USER_ID,
         status: "active",
         tags: ["focus"],
         data: { isMorningPick: false, completed: false, actualDuration: 0 },
-      });
+      }, USER_ID);
 
       expect(nodeCreate).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -202,7 +200,6 @@ describe("createNode", () => {
       const result = await createNode({
         type: "event",
         title: "My Event",
-        userId: USER_ID,
         status: "active",
         tags: [],
         data: {
@@ -210,7 +207,7 @@ describe("createNode", () => {
           endTime: "2026-02-01T10:00:00.000Z",
           isAllDay: false,
         },
-      });
+      }, USER_ID);
 
       expect(result.type).toBe("event");
       expect(result.title).toBe("My Event");
@@ -225,11 +222,10 @@ describe("createNode", () => {
       const result = await createNode({
         type: "idea",
         title: "My Idea",
-        userId: USER_ID,
         status: "active",
         tags: [],
         data: { content: "great idea", pinned: false },
-      });
+      }, USER_ID);
 
       expect(result.type).toBe("idea");
       expect((result as { content?: string }).content).toBe("great idea");
@@ -244,11 +240,10 @@ describe("createNode", () => {
       const result = await createNode({
         type: "project",
         title: "My Project",
-        userId: USER_ID,
         status: "active",
         tags: ["launch"],
         data: { projectStatus: "active", progress: 0, childNodeIds: [] },
-      });
+      }, USER_ID);
 
       expect(result.type).toBe("project");
       expect(result.tags).toContain("launch");

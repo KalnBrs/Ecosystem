@@ -4,7 +4,6 @@ import { NodeStatus } from "@/generated/prisma";
 const BaseNode = z.object({
   title: z.string().min(1).max(255),
   description: z.string().optional(),
-  userId: z.uuid(),
   status: z.enum(Object.keys(NodeStatus) as [keyof typeof NodeStatus, ...string[]]),
   tags: z.string().array().default([]),
 });

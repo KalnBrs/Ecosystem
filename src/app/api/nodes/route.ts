@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const parsed = CreateNodeSchema.parse(await request.json());
 
-    const node = await createNode(parsed);
+    const node = await createNode(parsed, userId);
 
     return NextResponse.json(
       {message: `Created a node with a title of ${parsed.title}`, data: node},

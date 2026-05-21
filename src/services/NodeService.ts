@@ -85,8 +85,8 @@ function hydrateNode(row: PrismaNodeRow): Node {
 
 // ─── Service methods ──────────────────────────────────────────────────────────
 
-export async function createNode(input: CreateNodeInput): Promise<Node> {
-  const { type, data, userId, title, description, status, tags } = input;
+export async function createNode(input: CreateNodeInput, userId: string): Promise<Node> {
+  const { type, data, title, description, status, tags } = input;
 
   const row = await prisma.node.create({
     data: {

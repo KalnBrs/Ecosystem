@@ -149,7 +149,6 @@ describe("POST /api/nodes", () => {
   const validTaskBody = {
     type: "task",
     title: "New Task",
-    userId: USER_ID,
     status: "active",
     tags: [],
     data: { completed: false, actualDuration: 0 },
@@ -186,6 +185,7 @@ describe("POST /api/nodes", () => {
 
       expect(createNodeMock).toHaveBeenCalledWith(
         expect.objectContaining({ type: "task", title: "New Task" }),
+        USER_ID,
       );
     });
   });
@@ -213,7 +213,7 @@ describe("POST /api/nodes", () => {
       const request = makeRequest("http://localhost/api/nodes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "task" }), // missing title, userId, status, data
+        body: JSON.stringify({ type: "task" }), // missing title, status, data
       });
       const response = await POST(request);
 
@@ -227,7 +227,7 @@ describe("POST /api/nodes", () => {
       const request = makeRequest("http://localhost/api/nodes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "unknown", title: "x", userId: USER_ID, status: "active" }),
+        body: JSON.stringify({ type: "unknown", title: "x", status: "active" }),
       });
       const response = await POST(request);
 
