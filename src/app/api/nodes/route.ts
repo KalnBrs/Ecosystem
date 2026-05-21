@@ -1,3 +1,4 @@
+import { NodeType } from "@/generated/prisma";
 import { authOptions } from "@/lib/auth";
 import { CreateNodeSchema } from "@/lib/schemas/node.schema";
 import { createNode, listNodes } from "@/services/NodeService";
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
 
-    const nodes = await listNodes(userId, type);
+    const nodes = await listNodes(userId, type as NodeType);
 
     return NextResponse.json(
       {message: `Retrived all the nodes for user id of ${userId} and type ${type}`, data: nodes},
