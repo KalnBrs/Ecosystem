@@ -43,7 +43,6 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.email = user.email;
         token.id = user.id;
-        token.name = user.name;
       }
       return token;
     },
@@ -52,7 +51,6 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.email = (token.email as string) || "";
         session.user.id = (token.id as string) || "";
-        session.user.name = (token.name as string) || "";
       }
       return session;
     }
