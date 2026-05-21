@@ -82,7 +82,7 @@ function makeTaskRow(overrides: Partial<Record<string, unknown>> = {}) {
     userId: USER_ID,
     tags: [],
     status: "active",
-    data: { completed: false, actualDuration: 0 },
+    data: { isMorningPick: false, completed: false, actualDuration: 0 },
     outgoingLinks: [],
     incomingLinks: [],
     ...overrides,
@@ -161,7 +161,7 @@ describe("createNode", () => {
         userId: USER_ID,
         status: "active",
         tags: [],
-        data: { completed: false, actualDuration: 0 },
+        data: { isMorningPick: true, completed: false, actualDuration: 0 },
       });
 
       expect(result.type).toBe("task");
@@ -179,7 +179,7 @@ describe("createNode", () => {
         userId: USER_ID,
         status: "active",
         tags: ["focus"],
-        data: { completed: false, actualDuration: 0 },
+        data: { isMorningPick: false, completed: false, actualDuration: 0 },
       });
 
       expect(nodeCreate).toHaveBeenCalledWith(

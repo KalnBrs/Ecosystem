@@ -118,9 +118,10 @@ describe("signUp", () => {
     it("returns null instead of propagating the error", async () => {
       findFirstMock.mockResolvedValue(null);
       createMock.mockRejectedValue(
-        new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+          new Prisma.PrismaClientKnownRequestError("Unique constraint failed", new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
           code: "P2002",
-        }),
+          clientVersion: "5.0.0",
+        })),
       );
 
       const result = await signUp(validPayload);
