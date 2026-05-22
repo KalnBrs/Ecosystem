@@ -13,7 +13,8 @@ export class Idea extends Node {
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
-   * @param linkedNodeIds - IDs of related nodes (populated at read time).
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to (populated at read time).
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node (populated at read time).
    * @param status - Lifecycle status.
    * @param content - Rich-text body of the idea.
    * @param pinned - Whether the idea is pinned for quick access; defaults to `false`.
@@ -26,11 +27,12 @@ export class Idea extends Node {
     updatedAt: Date,
     userId: string,
     tags: string[],
-    linkedNodeIds: string[],
+    outgoingLinkedNodeIds: string[],
+    incomingLinkedNodeIds: string[],
     status: NodeStatus,
     public content: string, // Rich text
     public pinned: boolean = false
   ) {
-    super(id, title, description, "idea", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "idea", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }
 }

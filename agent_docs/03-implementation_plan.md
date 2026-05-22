@@ -180,6 +180,9 @@ Phase 1 has been intentionally compressed to keep this file focused on active im
 - Calendar Day and Week views
 - Drag any task to a time slot to set `dueDate` without changing type
 - Universal search: full-text on `title`, `description`, `tags`; filter shortcuts (`energy:deep`, `due:today`)
+- Calendar Day and Week views
+- Drag any task to a time slot to set `dueDate` without changing type
+- Universal search: full-text on `title`, `description`, `tags`; filter shortcuts (`energy:deep`, `due:today`)
 - Google Calendar sync (OAuth, two-way Event sync)
 
 ### Phase 7 — Anti-Procrastination Suite (v2)

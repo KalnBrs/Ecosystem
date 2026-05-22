@@ -49,23 +49,30 @@ Everything else below is **planned** unless marked ✅ installed.
 ### State Management _(planned)_
 
 - **Redux Toolkit** — Primary choice. Will manage:
-  - Window positions, sizes, and z-order
-  - All Node data (tasks, events, ideas, projects)
+  - All Node data (tasks, events, ideas)
   - Auth state
-  - UI state (current calendar date, active filters, selected items)
-- **Fallback:** Zustand or TanStack Query if Redux proves too heavy for the use case
+  - UI state (active view, focus session, Morning 3 picks, command palette open/closed)
+- **Fallback:** Zustand if Redux proves too heavy for the use case
 
-### Window Manager _(planned, under research)_
+### Layout _(planned)_
 
-Candidates being evaluated:
+Single-panel, sidebar-driven layout. No floating windows. The app has one primary content area that transitions between views:
 
-| Option                   | Notes                                    |
-| ------------------------ | ---------------------------------------- |
-| `react-mosaic-layout`    | Mature tiling layout, similar to VS Code |
-| `react-resizable-panels` | Simpler panel resizing                   |
-| Custom implementation    | Maximum control, higher build cost       |
+| View            | Route / Trigger                  |
+| --------------- | -------------------------------- |
+| Morning 3       | Default on first open of the day |
+| Focus Mode      | Triggered by "Start" button      |
+| Inbox           | Sidebar nav or `Cmd+K`           |
+| Task List       | Sidebar nav or `Cmd+K`           |
+| Calendar        | Sidebar nav or `Cmd+K`           |
+| Daily Reset     | End-of-day prompt                |
+| Command Palette | `Cmd+K` / `/` from any view      |
 
-Decision will be made after prototyping 1–2 options.
+### Command Palette _(planned)_
+
+- **`cmdk`** — Headless command palette primitive (used by shadcn/ui). Lightweight, accessible, keyboard-driven.
+- Triggered globally by `Cmd+K`
+- Hosts all actions: create task/idea/event, navigate views, start focus session
 
 ---
 
@@ -143,10 +150,12 @@ npx prisma studio                      # Visual DB browser
 
 ## Future Decisions
 
-### AI Service _(v2+, not yet decided)_
+### AI Service _(v1.1, not yet decided)_
 
-Candidates: OpenAI GPT-4, Anthropic Claude, Azure AI, local Ollama  
-Usage: Brain Dump analysis, smart Node categorization, auto-tagging
+Candidates: OpenAI GPT-4, Anthropic Claude, Azure AI  
+Usage: Natural language task/event entry parsing (v1.1). Later: stuck-detection analysis, task splitting suggestions.
+
+v1.0 ships a lightweight rule-based date/time parser (chrono-node or similar) for basic NLP entry without AI costs.
 
 ### External Calendar Sync _(v1.1)_
 
@@ -157,17 +166,19 @@ Usage: Brain Dump analysis, smart Node categorization, auto-tagging
 
 ## Summary Table
 
-| Layer              | Technology                    | Status          | Notes                          |
-| ------------------ | ----------------------------- | --------------- | ------------------------------ |
-| Frontend framework | Next.js 16.1.6 + React 19.2.3 | ✅ Installed    | App Router                     |
-| Language           | TypeScript 5 (strict)         | ✅ Installed    | `src/@types/` for custom types |
-| Styling            | Tailwind CSS v4               | ✅ Installed    | PostCSS configured             |
-| React Compiler     | `babel-plugin-react-compiler` | ✅ Installed    | Auto-optimization              |
-| Component library  | shadcn/ui or Radix UI         | 🔄 Not selected | Decision pending               |
-| State management   | Redux Toolkit                 | ⏸️ Planned      | Zustand as fallback            |
-| Window manager     | TBD                           | 🔄 Researching  | Prototyping needed             |
-| API layer          | Next.js API Routes            | ⏸️ Planned      | `src/app/api/` (empty)         |
-| Auth               | NextAuth.js                   | ⏸️ Planned      | Email + OAuth                  |
-| Database           | PostgreSQL + Prisma           | ⏸️ Planned      | JSONB hybrid schema            |
-| Deployment         | Vercel                        | ⏸️ Planned      | Serverless                     |
-| AI service         | TBD                           | ⏸️ Future (v2+) | Brain Dump feature             |
+| Layer              | Technology                    | Status            | Notes                          |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------ |
+| Frontend framework | Next.js 16.1.6 + React 19.2.3 | ✅ Installed      | App Router                     |
+| Language           | TypeScript 5 (strict)         | ✅ Installed      | `src/@types/` for custom types |
+| Styling            | Tailwind CSS v4               | ✅ Installed      | PostCSS configured             |
+| React Compiler     | `babel-plugin-react-compiler` | ✅ Installed      | Auto-optimization              |
+| Component library  | shadcn/ui + Radix UI          | ⏸️ Planned        | Pairs with `cmdk` for palette  |
+| Command palette    | `cmdk`                        | ⏸️ Planned        | `Cmd+K` global trigger         |
+| State management   | Redux Toolkit                 | ⏸️ Planned        | Zustand as fallback            |
+| Layout             | Single-panel sidebar nav      | ⏸️ Planned        | No floating windows            |
+| NLP date parsing   | `chrono-node` (v1.0)          | ⏸️ Planned        | Rule-based; AI upgrade in v1.1 |
+| API layer          | Next.js API Routes            | ⏸️ Planned        | `src/app/api/` (empty)         |
+| Auth               | NextAuth.js                   | ✅ Installed      | Email + JWT sessions           |
+| Database           | PostgreSQL + Prisma           | ✅ Installed      | JSONB hybrid schema            |
+| Deployment         | Vercel                        | ⏸️ Planned        | Serverless                     |
+| AI service         | TBD                           | ⏸️ Future (v1.1+) | NLP entry, stuck detection     |

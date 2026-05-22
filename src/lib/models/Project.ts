@@ -1,4 +1,4 @@
-import { Node, NodeType, NodeStatus } from "./Node";
+import { Node, NodeStatus } from "./Node";
 
 /**
  * Represents a project node — a container that groups related tasks and other nodes.
@@ -13,7 +13,8 @@ export class Project extends Node {
    * @param updatedAt - Last-updated timestamp.
    * @param userId - ID of the owning user.
    * @param tags - Arbitrary string labels.
-   * @param linkedNodeIds - IDs of related nodes (populated at read time).
+   * @param outgoingLinkedNodeIds - IDs of nodes this node links to (populated at read time).
+   * @param incomingLinkedNodeIds - IDs of nodes that link to this node (populated at read time).
    * @param status - Lifecycle status.
    * @param startDate - Optional date the project starts.
    * @param targetDate - Optional deadline for the project.
@@ -29,7 +30,8 @@ export class Project extends Node {
     updatedAt: Date,
     userId: string,
     tags: string[],
-    linkedNodeIds: string[],
+    outgoingLinkedNodeIds: string[],
+    incomingLinkedNodeIds: string[],
     status: NodeStatus,
     public startDate?: Date,
     public targetDate?: Date,
@@ -37,6 +39,6 @@ export class Project extends Node {
     public progress: number = 0, // 0-100, derived from child tasks
     public childNodeIds: string[] = []
   ) {
-    super(id, title, description, "project", createdAt, updatedAt, userId, tags, linkedNodeIds, status);
+    super(id, title, description, "project", createdAt, updatedAt, userId, tags, outgoingLinkedNodeIds, incomingLinkedNodeIds, status);
   }
 }
