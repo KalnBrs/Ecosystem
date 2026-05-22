@@ -38,6 +38,7 @@ jest.mock("@/services/NodeService", () => ({
 
 import { getServerSession } from "next-auth/next";
 import { createLink, deleteLink } from "@/services/NodeService";
+import { NextRequest } from "next/server";
 
 const sessionMock = getServerSession as jest.Mock;
 const createLinkMock = createLink as jest.Mock;
@@ -53,11 +54,11 @@ const AUTHED_SESSION = { user: { id: USER_ID } };
 
 /** Builds the params context object to match App Router handler signature. */
 function makeParams(id: string) {
-  return { params: { id } };
+  return { params: Promise.resolve({ id }) };
 }
 
-function makeRequest(body?: unknown, method = "POST"): Request {
-  return new Request(`http://localhost/api/nodes/${SOURCE_ID}/links`, {
+function makeRequest(body?: unknown, method = "POST"): NextRequest {
+  return new NextRequest(`http://localhost/api/nodes/${SOURCE_ID}/links`, {
     method,
     headers: { "Content-Type": "application/json" },
     body: body !== undefined ? JSON.stringify(body) : undefined,

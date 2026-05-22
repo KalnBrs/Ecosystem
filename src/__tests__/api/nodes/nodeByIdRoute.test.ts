@@ -46,6 +46,7 @@ jest.mock("@/services/NodeService", () => ({
 
 import { getServerSession } from "next-auth/next";
 import { getNodeById, updateNode, deleteNode } from "@/services/NodeService";
+import { NextRequest } from "next/server";
 
 const sessionMock = getServerSession as jest.Mock;
 const getNodeByIdMock = getNodeById as jest.Mock;
@@ -77,11 +78,11 @@ const stubNode = {
 
 /** Builds the params context object to match App Router handler signature. */
 function makeParams(id: string) {
-  return { params: { id } };
+  return { params: Promise.resolve({ id }) };
 }
 
-function makeRequest(options?: RequestInit): Request {
-  return new Request(`http://localhost/api/nodes/${NODE_ID}`, options);
+function makeRequest(options?: ConstructorParameters<typeof NextRequest>[1]): NextRequest {
+  return new NextRequest(`http://localhost/api/nodes/${NODE_ID}`, options);
 }
 
 // ─── GET /api/nodes/[id] ──────────────────────────────────────────────────────

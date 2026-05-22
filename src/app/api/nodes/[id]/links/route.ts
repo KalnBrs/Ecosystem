@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { createLink, deleteLink } from "@/services/NodeService";
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z, ZodError } from "zod";
 
 
@@ -10,11 +10,11 @@ const LinkBodySchema = z.object({
 });
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (!userId) {
@@ -40,11 +40,11 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (!userId) {

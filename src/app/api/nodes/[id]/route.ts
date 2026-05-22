@@ -1,16 +1,16 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { deleteNode, getNodeById, updateNode } from "@/services/NodeService";
 import { UpdateNodeSchema } from "@/lib/schemas/node.schema";
 import { ZodError } from "zod";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string }}
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
@@ -51,13 +51,13 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string }}
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const parsed = UpdateNodeSchema.parse(await request.json());
 
-    const { id } =  params;
+    const { id } = await params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
@@ -103,11 +103,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string }}
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
