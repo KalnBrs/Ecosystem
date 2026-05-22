@@ -11,7 +11,6 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        name: {label: "Name", type: "name"}
       },
       /**
        * Validates the supplied credentials against the database.

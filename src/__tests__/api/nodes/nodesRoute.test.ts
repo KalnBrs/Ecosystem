@@ -217,7 +217,7 @@ describe("POST /api/nodes", () => {
       });
       const response = await POST(request);
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
       expect(createNodeMock).not.toHaveBeenCalled();
     });
 
@@ -231,7 +231,7 @@ describe("POST /api/nodes", () => {
       });
       const response = await POST(request);
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 

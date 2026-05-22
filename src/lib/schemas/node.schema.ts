@@ -28,6 +28,7 @@ export const TaskSchema = BaseNode.extend({
 export const UpdateTaskSchema = z.object({
   type: z.literal("task"),
 }).merge(BaseNode.partial()).extend({
+  tags: z.string().array().optional(),
   data: TaskSchema.shape.data.partial().optional(),
 });
 
@@ -46,6 +47,7 @@ export const EventSchema = BaseNode.extend({
 export const UpdateEventSchema = z.object({
   type: z.literal("event"),
 }).merge(BaseNode.partial()).extend({
+  tags: z.string().array().optional(),
   data: EventSchema.shape.data.partial().optional(),
 });
 
@@ -62,6 +64,7 @@ export const IdeaSchema = BaseNode.extend({
 export const UpdateIdeaSchema = z.object({
   type: z.literal("idea"),
 }).merge(BaseNode.partial()).extend({
+  tags: z.string().array().optional(),
   data: IdeaSchema.shape.data.partial().optional(),
 });
 
@@ -81,6 +84,7 @@ export const ProjectSchema = BaseNode.extend({
 export const UpdateProjectSchema = z.object({
   type: z.literal("project"),
 }).merge(BaseNode.partial()).extend({
+  tags: z.string().array().optional(),
   data: ProjectSchema.shape.data.partial().optional(),
 });
 

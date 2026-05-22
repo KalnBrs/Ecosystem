@@ -2,7 +2,8 @@ import { authOptions } from "@/lib/auth";
 import { createLink, deleteLink } from "@/services/NodeService";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import { z, ZodError } from "zod";
+
 
 const LinkBodySchema = z.object({
   targetNodeId: z.uuid(),
@@ -10,10 +11,10 @@ const LinkBodySchema = z.object({
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (!userId) {
@@ -29,7 +30,9 @@ export async function POST(
 
     return NextResponse.json({ data: links }, { status: 201 });
   } catch (error: unknown) {
-    if (error instanceof Error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ message: "Incorect body for wanted type" }, { status: 400 })
+    } else if (error instanceof Error) {
       return NextResponse.json({ message: "An error occurred: " + error.message }, { status: 500 });
     }
     return NextResponse.json({ message: "An unexpected error occurred." }, { status: 500 });
@@ -38,10 +41,10 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (!userId) {

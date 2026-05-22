@@ -4,6 +4,7 @@ import { CreateNodeSchema } from "@/lib/schemas/node.schema";
 import { createNode, listNodes } from "@/services/NodeService";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 export async function GET(request: Request) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
 
-    const nodes = await listNodes(userId, type as NodeType);
+    const nodes = await listNodes(userId, type as NodeType | null);
 
     return NextResponse.json(
       {message: `Retrived all the nodes for user id of ${userId} and type ${type}`, data: nodes},
@@ -64,7 +65,12 @@ export async function POST(request: Request) {
     )
 
   } catch (error: unknown) {
-    if (error instanceof Error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {message: "Incorect body for wanted type"},
+        {status: 400}
+      )
+    } else if (error instanceof Error) {
       return NextResponse.json(
         {message: 'An error occurred while trying to create a node: ' + error.message},
         {status: 500}

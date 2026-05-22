@@ -3,13 +3,14 @@ import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { deleteNode, getNodeById, updateNode } from "@/services/NodeService";
 import { UpdateNodeSchema } from "@/lib/schemas/node.schema";
+import { ZodError } from "zod";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }>}
+  { params }: { params: { id: string }}
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
@@ -51,12 +52,12 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }>}
+  { params }: { params: { id: string }}
 ) {
   try {
     const parsed = UpdateNodeSchema.parse(await request.json());
 
-    const { id } = await params;
+    const { id } =  params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
@@ -82,26 +83,31 @@ export async function PATCH(
     )
 
   } catch (error: unknown) {
-      if (error instanceof Error) {
-        return NextResponse.json(
-          {message: `An error occurred while updating a node` + error.message},
-          {status: 500}
-        )
-      } else {
-        return NextResponse.json(
-          {message: 'An unexpected error occurred' + error},
-          {status: 500}
-        )
-      }
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {message: "Incorect body for wanted type"},
+        {status: 400}
+      )
+    } else if (error instanceof Error) {
+      return NextResponse.json(
+        {message: `An error occurred while updating a node` + error.message},
+        {status: 500}
+      )
+    } else {
+      return NextResponse.json(
+        {message: 'An unexpected error occurred' + error},
+        {status: 500}
+      )
     }
+  }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }>}
+  { params }: { params: { id: string }}
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 

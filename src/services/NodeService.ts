@@ -114,11 +114,11 @@ export async function getNodeById(id: string, userId: string): Promise<Node | nu
   return hydrateNode(row);
 }
 
-export async function listNodes(userId: string, type: NodeType): Promise<Node[]> {
+export async function listNodes(userId: string, type?: NodeType | null): Promise<Node[]> {
   const rows = await prisma.node.findMany({
     where: {
       userId,
-      type,
+      ...(type != null ? { type } : {}),
       status: { not: PrismaNodeStatus.deleted },
     },
     include: nodeLinksInclude,
@@ -190,9 +190,12 @@ export async function createLink(
   targetNodeId: string,
   userId: string,
 ): Promise<LinkResult | null> {
-  // Verify the caller owns the source node before writing any link.
-  const sourceNode = await prisma.node.findFirst({ where: { id: sourceNodeId, userId } });
-  if (!sourceNode) return null;
+  // Verify the caller owns both the source and target nodes before writing any link.
+  const [sourceNode, targetNode] = await Promise.all([
+    prisma.node.findFirst({ where: { id: sourceNodeId, userId } }),
+    prisma.node.findFirst({ where: { id: targetNodeId, userId } }),
+  ]);
+  if (!sourceNode || !targetNode) return null;
 
   // upsert handles the @@unique([sourceNodeId, targetNodeId]) constraint gracefully —
   // creating the link if it doesn't exist, doing nothing if it already does.
@@ -210,9 +213,12 @@ export async function deleteLink(
   targetNodeId: string,
   userId: string,
 ): Promise<LinkResult | null> {
-  // Verify the caller owns the source node before deleting any link.
-  const sourceNode = await prisma.node.findFirst({ where: { id: sourceNodeId, userId } });
-  if (!sourceNode) return null;
+  // Verify the caller owns both the source and target nodes before deleting any link.
+  const [sourceNode, targetNode] = await Promise.all([
+    prisma.node.findFirst({ where: { id: sourceNodeId, userId } }),
+    prisma.node.findFirst({ where: { id: targetNodeId, userId } }),
+  ]);
+  if (!sourceNode || !targetNode) return null;
 
   await prisma.nodeLink.deleteMany({ where: { sourceNodeId, targetNodeId } });
 

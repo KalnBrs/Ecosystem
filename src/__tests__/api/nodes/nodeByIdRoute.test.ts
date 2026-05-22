@@ -75,9 +75,9 @@ const stubNode = {
   actualDuration: 0,
 };
 
-/** Wraps params as a Promise to match App Router handler signature. */
+/** Builds the params context object to match App Router handler signature. */
 function makeParams(id: string) {
-  return { params: Promise.resolve({ id }) };
+  return { params: { id } };
 }
 
 function makeRequest(options?: RequestInit): Request {
@@ -228,7 +228,7 @@ describe("PATCH /api/nodes/[id]", () => {
       });
       const response = await PATCH(request, makeParams(NODE_ID));
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 

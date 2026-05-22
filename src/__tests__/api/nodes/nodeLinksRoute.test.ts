@@ -51,9 +51,9 @@ const TARGET_ID = "550e8400-e29b-41d4-a716-446655440003";
 
 const AUTHED_SESSION = { user: { id: USER_ID } };
 
-/** Wraps params as a Promise to match App Router handler signature. */
+/** Builds the params context object to match App Router handler signature. */
 function makeParams(id: string) {
-  return { params: Promise.resolve({ id }) };
+  return { params: { id } };
 }
 
 function makeRequest(body?: unknown, method = "POST"): Request {
@@ -133,7 +133,7 @@ describe("POST /api/nodes/[id]/links", () => {
         makeParams(SOURCE_ID),
       );
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400   );
       expect(createLinkMock).not.toHaveBeenCalled();
     });
 
@@ -142,7 +142,7 @@ describe("POST /api/nodes/[id]/links", () => {
 
       const response = await POST(makeRequest({}), makeParams(SOURCE_ID));
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 
