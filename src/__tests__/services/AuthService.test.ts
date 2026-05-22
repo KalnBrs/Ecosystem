@@ -23,10 +23,12 @@ jest.mock("@/lib/prisma", () => ({
 jest.mock("@/generated/prisma", () => {
   class PrismaClientKnownRequestError extends Error {
     code: string;
-    constructor(message: string, { code }: { code: string }) {
+    clientVersion: string;
+    constructor(message: string, { code, clientVersion }: { code: string; clientVersion: string }) {
       super(message);
       this.name = "PrismaClientKnownRequestError";
       this.code = code;
+      this.clientVersion = clientVersion;
     }
   }
   return {
@@ -118,10 +120,10 @@ describe("signUp", () => {
     it("returns null instead of propagating the error", async () => {
       findFirstMock.mockResolvedValue(null);
       createMock.mockRejectedValue(
-          new Prisma.PrismaClientKnownRequestError("Unique constraint failed", new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+        new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
           code: "P2002",
-          clientVersion: "5.0.0",
-        })),
+          clientVersion: "test-client"
+        }),
       );
 
       const result = await signUp(validPayload);
