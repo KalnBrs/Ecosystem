@@ -11,7 +11,6 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        name: {label: "Name", type: "name"}
       },
       /**
        * Validates the supplied credentials against the database.
@@ -38,6 +37,23 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email;
+        token.id = user.id;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.email = (token.email as string) || "";
+        session.user.id = (token.id as string) || "";
+      }
+      return session;
+    }
+  },
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" as const },
   pages: {

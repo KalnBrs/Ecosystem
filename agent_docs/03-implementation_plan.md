@@ -123,7 +123,7 @@ IMPORTANT CONTEXT FILES
 | 3.3 | [x]    | Add `getServerSession` guard helper                    | 🟠       | 2      | 3.2      | Utility at `src/lib/session.ts`: wraps `getServerSession(authOptions)` and throws 401 if unauthenticated. Used by all API routes.                                                                                                                                   |
 | 3.4 | [x]    | Create `AuthService.ts` (signUp with password hashing) | 🟠       | 2      | 3.3      | `src/services/AuthService.ts`. `signUp(email, password, name)` — hash with bcrypt, insert user. Handle duplicate email error.                                                                                                                                       |
 | 3.5 | [x]    | `POST /api/auth/signup` route                          | 🟠       | 2      | 3.4      | Validates body with Zod, calls `AuthService.signUp`. Returns 201 on success, 409 on duplicate. Implemented at `/api/auth/users` (path differs from plan).                                                                                                           |
-| 3.6 | [ ]    | Basic login + signup page UI                           | 🔵       | 5      | 3.5      | Minimal form pages at `/login` and `/signup`. Not a design priority — functional only.                                                                                                                                                                              |
+| 3.6 | [x]    | Basic login + signup page UI                           | 🔵       | 5      | 3.5      | Minimal form pages at `/login` and `/signup`. Not a design priority — functional only.                                                                                                                                                                              |
 
 ---
 
@@ -131,15 +131,14 @@ IMPORTANT CONTEXT FILES
 
 | #   | Status | Task                                                              | Priority | Points | Blockers      | Notes                                                                                                                                                                                                                                     |
 | --- | ------ | ----------------------------------------------------------------- | -------- | ------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.1 | [ ]    | Write Zod schemas for Node request/response bodies                | 🔴       | 3      | 1.4           | `src/lib/schemas/node.schema.ts`. Schemas for create, update (partial), and each subtype's `data` payload.                                                                                                                                |
-| 4.2 | [ ]    | Create `NodeService.ts` skeleton                                  | 🔴       | 3      | 2.2           | `src/services/NodeService.ts`. Methods: `createNode`, `getNodeById`, `listNodes`, `updateNode`, `deleteNode`. Every read must JOIN `node_links` and populate `linkedNodeIds` on the returned object — it is never stored in `nodes.data`. |
-| 4.3 | [ ]    | `GET /api/nodes` — list all nodes for authenticated user          | 🔴       | 2      | 3.3, 4.1, 4.2 | Scoped to `userId` from session. Support optional `?type=` query param filter. Returns array of nodes.                                                                                                                                    |
-| 4.4 | [ ]    | `POST /api/nodes` — create a new node                             | 🔴       | 2      | 4.3           | Validates body with Zod. Generates `id` (UUID), sets `createdAt`/`updatedAt`. Returns 201 + created node.                                                                                                                                 |
-| 4.5 | [ ]    | `GET /api/nodes/[id]` — get a single node by ID                   | 🟠       | 1      | 4.3           | Returns 404 if not found or not owned by session user.                                                                                                                                                                                    |
-| 4.6 | [ ]    | `PATCH /api/nodes/[id]` — partial update a node                   | 🟠       | 2      | 4.5           | Merges `data` JSONB field (don't overwrite unrelated keys). Updates `updatedAt`. Returns updated node.                                                                                                                                    |
-| 4.7 | [ ]    | `DELETE /api/nodes/[id]` — soft delete (set `status = "deleted"`) | 🟠       | 1      | 4.5           | Does not remove the DB row. Returns 204 on success.                                                                                                                                                                                       |
-| 4.8 | [ ]    | Node ownership guard (shared middleware helper)                   | 🟠       | 2      | 3.3           | `src/lib/nodeGuard.ts`: fetches node, verifies `userId` matches session. Throws 403 if mismatch. Reused by 4.5, 4.6, 4.7.                                                                                                                 |
-| 4.9 | [ ]    | Link management endpoints (`POST`/`DELETE /api/nodes/[id]/links`) | 🟠       | 3      | 4.5, 4.8      | Writes to/deletes from `node_links` table only — never touches `nodes.data`. `POST` body: `{ targetNodeId }`. Returns updated `linkedNodeIds` array derived from a fresh JOIN.                                                            |
+| 4.1 | [x]    | Write Zod schemas for Node request/response bodies                | 🔴       | 3      | 1.4           | `src/lib/schemas/node.schema.ts`. Schemas for create, update (partial), and each subtype's `data` payload.                                                                                                                                |
+| 4.2 | [x]    | Create `NodeService.ts` skeleton                                  | 🔴       | 3      | 2.2           | `src/services/NodeService.ts`. Methods: `createNode`, `getNodeById`, `listNodes`, `updateNode`, `deleteNode`. Every read must JOIN `node_links` and populate `linkedNodeIds` on the returned object — it is never stored in `nodes.data`. |
+| 4.3 | [x]    | `GET /api/nodes` — list all nodes for authenticated user          | 🔴       | 2      | 3.3, 4.1, 4.2 | Scoped to `userId` from session. Support optional `?type=` query param filter. Returns array of nodes.                                                                                                                                    |
+| 4.4 | [x]    | `POST /api/nodes` — create a new node                             | 🔴       | 2      | 4.3           | Validates body with Zod. Generates `id` (UUID), sets `createdAt`/`updatedAt`. Returns 201 + created node.                                                                                                                                 |
+| 4.5 | [x]    | `GET /api/nodes/[id]` — get a single node by ID                   | 🟠       | 1      | 4.3           | Returns 404 if not found or not owned by session user.                                                                                                                                                                                    |
+| 4.6 | [x]    | `PATCH /api/nodes/[id]` — partial update a node                   | 🟠       | 2      | 4.5           | Merges `data` JSONB field (don't overwrite unrelated keys). Updates `updatedAt`. Returns updated node.                                                                                                                                    |
+| 4.7 | [x]    | `DELETE /api/nodes/[id]` — soft delete (set `status = "deleted"`) | 🟠       | 1      | 4.5           | Does not remove the DB row. Returns 204 on success.                                                                                                                                                                                       |                                         |
+| 4.8 | [x]    | Link management endpoints (`POST`/`DELETE /api/nodes/[id]/links`) | 🟠       | 3      | 4.5      | Writes to/deletes from `node_links` table only — never touches `nodes.data`. `POST` body: `{ targetNodeId }`. Returns updated `linkedNodeIds` array derived from a fresh JOIN.                                                            |
 
 ---
 
@@ -147,43 +146,52 @@ IMPORTANT CONTEXT FILES
 
 > Expand the relevant section into a full task table when the current phase is complete.
 
-### Phase 2 — Redux Store + Window Manager
+### Phase 2 — Redux Store + Layout Shell
 
-- Set up Redux store with slices: `nodesSlice`, `windowsSlice`, `authSlice`
-- Prototype window manager (evaluate `react-mosaic-layout` vs. `react-resizable-panels`)
+- Set up Redux store with slices: `nodesSlice`, `focusSlice`, `morning3Slice`, `dailyResetSlice`, `authSlice`
+- Build single-panel layout: sidebar nav + main content area
+- Task List view: renders Tasks, filterable by `energyLevel` (deep / light / quick)
+- Node card component (Task / Event / Idea / Project variants)
 - Connect Node API calls to Redux via RTK Query or `createAsyncThunk`
-- Basic layout shell: sidebar, window container
 
-### Phase 3 — Core UI: Dashboard & Node Cards
+### Phase 3 — Morning 3, Inbox, Daily Reset
 
-- Node card component (renders Task / Event / Idea / Project variants)
-- Dashboard view: Today's Tasks, Overdue Tasks, Active Projects, Upcoming Deadlines
-- Create/edit Node modal
-- Time-window aware layout (morning vs. day vs. evening defaults)
+- **Morning 3:** on first open of the day, lock exactly 3 task picks; only those 3 shown prominently
+- **Inbox / Idea Dump:** global quick-add (`Cmd+Shift+Space`); raw `Idea` Nodes land here; triage: convert to Task, schedule, or delete
+- **Daily Reset:** on first open of a new day, surface each overdue task with Reschedule / Defer / Delete options; one at a time, < 20 sec per item
+- Node conversion (Idea → Task preserving core metadata)
 
-### Phase 4 — Calendar
+### Phase 4 — Focus Mode
 
-- Calendar views: Day, Week, Month
-- Drag-and-drop Node to time slot (updates `dueDate` / `startTime`)
-- Event rendering on time grid
+- "Start" button on every task card
+- Full-screen focus overlay: hides all other UI chrome
+- Timer component: user sets countdown (any duration) or uses stopwatch mode
+- `lastTouchedAt` and `actualDuration` updated per session via PATCH
+- Smooth entry and exit transitions
 
-### Phase 5 — Projects & Inbox
+### Phase 5 — Command Palette + Quick Add + NLP Entry
 
-- Project hierarchy view (Area → Project → Nodes)
-- Overdue task triage flow (Reschedule / Scrap)
-- Brain Dump inbox (raw Idea nodes)
-- Node conversion (right-click → change type)
+- Command palette powered by `cmdk`: `Cmd+K` or `/` opens it from any view
+- All create / navigate / start actions accessible from palette
+- Global quick-add shortcut (`Cmd+Shift+Space`) — captures to Inbox without navigation
+- Rule-based NLP date/time parsing via `chrono-node` for natural language task/event entry
 
-### Phase 6 — Universal Search + Polish (v1.1)
+### Phase 6 — Calendar + Universal Search (v1.1)
 
-- Global omnibar (`Cmd+K`)
-- Full-text search + filter syntax (`type:task`, `due:today`, etc.)
+- Calendar Day and Week views
+- Drag any task to a time slot to set `dueDate` without changing type
+- Universal search: full-text on `title`, `description`, `tags`; filter shortcuts (`energy:deep`, `due:today`)
 - Google Calendar sync (OAuth, two-way Event sync)
-- Performance audit, error boundaries, loading states
 
-### Phase 7 — AI & Advanced Features (v2+)
+### Phase 7 — Anti-Procrastination Suite (v2)
 
-- Brain Dump AI analysis (background, non-blocking)
-- Auto-tagging and Node type suggestions
-- Habit tracking
-- Wiki-style Node linking and backlinks
+- **Task Shrinking:** after 30+ min idle on a large task → "Too big? Split it" prompt → inline task splitter
+- **Why Are You Stuck?:** focus session stopped within 3 min → nudge with "unclear / scary / boring" choice
+- **Micro Commitment:** "Just do 10 minutes" locked timer triggered from stuck flow
+- `splitFromTaskId` linking for split tasks
+
+### Phase 8 — AI Features (v1.1+)
+
+- AI natural language entry: replace `chrono-node` rule parser with LLM parse layer
+- Smart task/event field extraction from freeform text
+- Browser extension for global capture (post-launch, scope TBD)
