@@ -49,11 +49,11 @@ IMPORTANT CONTEXT FILES
 
 # Implementation Plan
 
-## Current Phase: Phase 1 — Foundation
+## Current Phase: Phase 2 — Redux Store + Layout Shell
 
-**Goal:** Wire together the full request lifecycle end-to-end so that an authenticated user can create, read, update, and delete Nodes via the API with data persisted to PostgreSQL.
+**Goal:** Stand up client-side app state and a usable application shell so authenticated users can view Nodes in the UI, filter Tasks by energy level, and trigger Node API operations through Redux-managed flows.
 
-**Exit criteria:** All 🔴 and 🟠 tasks below are complete. A `curl` or REST client can authenticate and perform full CRUD on `/api/nodes` against a live database.
+**Exit criteria:** All 🔴 and 🟠 tasks below are complete. The app renders a sidebar + main content layout, loads nodes via Redux async actions, shows Task cards, and supports energy-level filtering (`deep`, `light`, `quick`) from the UI.
 
 ---
 
@@ -88,58 +88,64 @@ IMPORTANT CONTEXT FILES
 
 ---
 
-## Phase 1 Tasks
+## ~~Phase 1 Tasks~~ (Completed)
 
-### 1. Project Setup & Dependencies
+Phase 1 has been intentionally compressed to keep this file focused on active implementation work.
 
-| #   | Status | Task                                                                    | Priority | Points | Blockers | Notes                                                                                         |
-| --- | ------ | ----------------------------------------------------------------------- | -------- | ------ | -------- | --------------------------------------------------------------------------------------------- |
-| 1.1 | [x]    | Install Prisma ORM + postgres client (`prisma`, `@prisma/client`, `pg`) | 🔴       | 2      | —        | `npm install prisma @prisma/client pg` + `npx prisma init`. Generates `prisma/schema.prisma`. |
-| 1.2 | [x]    | Install NextAuth.js (`next-auth`)                                       | 🔴       | 1      | —        | `npm install next-auth`. Use latest v4 (v5 beta not yet stable enough).                       |
-| 1.3 | [x]    | Install Redux Toolkit + react-redux                                     | 🟠       | 1      | —        | `npm install @reduxjs/toolkit react-redux`. Needed by UI phases, not by API.                  |
-| 1.4 | [x]    | Install Zod                                                             | 🔴       | 1      | —        | `npm install zod`. Used for request body validation in all API routes.                        |
-| 1.5 | [x]    | Create `.env.local` template + `.env.example`                           | 🔴       | 1      | —        | Required vars: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`. Commit only `.env.example`. |
-| 1.6 | [x]    | Provision dev PostgreSQL database                                       | 🔴       | 2      | 1.5      | Recommended: Neon free tier. Set `DATABASE_URL` in `.env.local`.                              |
+### Phase 1 Completion Snapshot
 
----
+| Area                         | Status | Completion Notes                                                                                                              |
+| ---------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Project Setup & Dependencies | [x]    | Prisma + Postgres client, NextAuth, Redux Toolkit/react-redux, and Zod installed; env templates and dev Postgres configured.  |
+| Database Foundation          | [x]    | Prisma schema and migrations complete for `users`, `nodes`, `node_links`; seed script and schema verification complete.       |
+| Authentication               | [x]    | NextAuth credentials flow, auth route, session guard helper, signup service/route, and basic login/signup pages are complete. |
+| Core Node API                | [x]    | Full authenticated Node CRUD + link management endpoints complete and tested against DB-backed services.                      |
 
-### 2. Database Foundation
-
-| #   | Status | Task                                                        | Priority | Points | Blockers | Notes                                                                                                                                                                                                                                                                                                                                                |
-| --- | ------ | ----------------------------------------------------------- | -------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2.1 | [x]    | Write Prisma schema (`users`, `nodes`, `node_links` tables) | 🔴       | 3      | 1.1      | Match schema from `02-architecture.md`. `nodes` has JSONB `data` + `tags TEXT[]`. `node_links` has `source_node_id`/`target_node_id` FKs with `ON DELETE CASCADE` and a UNIQUE constraint. `linkedNodeIds` is **not** a column — it is resolved via JOIN at query time. **No sessions table** — NextAuth uses JWT, so no DB session table is needed. |
-| 2.2 | [x]    | Run first migration (`prisma migrate dev --name init`)      | 🔴       | 1      | 2.1, 1.6 | Generates `prisma/migrations/`. Verify tables via Prisma Studio or psql.                                                                                                                                                                                                                                                                             |
-| 2.3 | [x]    | Write dev seed script (`prisma/seed.ts`)                    | 🟠       | 2      | 2.2      | Seed 1 test user + a few sample Nodes of each type. Register in `package.json` as `"prisma": { "seed": "ts-node prisma/seed.ts" }` and add `ts-node` as a dev dependency (or use the repo's preferred TS runner).                                                                                                                                    |
-| 2.4 | [x]    | Verify schema with Prisma Studio (`npx prisma studio`)      | 🟠       | 1      | 2.2      | Smoke test only. Confirm all columns, relations, and constraints are correct.                                                                                                                                                                                                                                                                        |
+**Exit criteria met:** authenticated API CRUD on `/api/nodes` with persisted PostgreSQL data, plus link management and signup/auth flows.
 
 ---
 
-### 3. Authentication
+## Phase 2 Tasks
 
-| #   | Status | Task                                                   | Priority | Points | Blockers | Notes                                                                                                                                                                                                                                                               |
-| --- | ------ | ------------------------------------------------------ | -------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3.1 | [x]    | Configure NextAuth.js credentials provider             | 🔴       | 3      | 1.2, 2.2 | `CredentialsProvider` with email + bcrypt password check against `users` table. Store in `src/lib/auth.ts`. **Must set `session: { strategy: "jwt" }`** in `authOptions` — do not use the Prisma DB adapter for sessions. `NEXTAUTH_SECRET` is the JWT signing key. |
-| 3.2 | [x]    | Create `/api/auth/[...nextauth]/route.ts` handler      | 🔴       | 1      | 3.1      | App Router catch-all. Export `GET` and `POST` from NextAuth handler.                                                                                                                                                                                                |
-| 3.3 | [x]    | Add `getServerSession` guard helper                    | 🟠       | 2      | 3.2      | Utility at `src/lib/session.ts`: wraps `getServerSession(authOptions)` and throws 401 if unauthenticated. Used by all API routes.                                                                                                                                   |
-| 3.4 | [x]    | Create `AuthService.ts` (signUp with password hashing) | 🟠       | 2      | 3.3      | `src/services/AuthService.ts`. `signUp(email, password, name)` — hash with bcrypt, insert user. Handle duplicate email error.                                                                                                                                       |
-| 3.5 | [x]    | `POST /api/auth/signup` route                          | 🟠       | 2      | 3.4      | Validates body with Zod, calls `AuthService.signUp`. Returns 201 on success, 409 on duplicate. Implemented at `/api/auth/users` (path differs from plan).                                                                                                           |
-| 3.6 | [ ]    | Basic login + signup page UI                           | 🔵       | 5      | 3.5      | Minimal form pages at `/login` and `/signup`. Not a design priority — functional only.                                                                                                                                                                              |
+### 1. Redux State Foundation
 
----
+| #   | Status | Task                                                               | Priority | Points | Blockers | Notes                                                                                                                          |
+| --- | ------ | ------------------------------------------------------------------ | -------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1.1 | [-]    | Create app Redux store scaffold                                    | 🔴       | 2      | 1.3      | Add `src/store/store.ts` with `configureStore`, typed `RootState`/`AppDispatch`, and thunk support.                            |
+| 1.2 | [ ]    | Add client `StoreProvider` and wire in root layout                 | 🔴       | 2      | 1.1      | Create `src/store/StoreProvider.tsx` using `<Provider store={store}>`; wrap app content in provider from app layout.           |
+| 1.3 | [ ]    | Implement `authSlice` for session status and current user metadata | 🟠       | 3      | 1.1      | Track `status` (`idle/loading/authenticated/unauthenticated`), user basics (`id`, `email`, `name`), and auth errors.           |
+| 1.4 | [ ]    | Implement `nodesSlice` with normalized node state                  | 🔴       | 5      | 1.1      | Store nodes by `id` + ordered id list. Include request status/error and selectors for all nodes, by type, and by id.           |
+| 1.5 | [ ]    | Implement `focusSlice` state model                                 | 🟠       | 2      | 1.1      | Keep `activeTaskId`, focus mode flag, timer mode (`countdown`/`stopwatch`), and duration fields for upcoming focus-mode phase. |
+| 1.6 | [ ]    | Implement `morning3Slice` state model                              | 🟠       | 2      | 1.1      | Track selected task ids, lock state, and `lastInitializedDate` for first-open-of-day behavior in next phase.                   |
+| 1.7 | [ ]    | Implement `dailyResetSlice` state model                            | 🟠       | 2      | 1.1      | Track overdue queue ids, index pointer, and reset completion date for daily reset workflow in next phase.                      |
 
-### 4. Core Node API
+### 2. API Wiring Through Redux
 
-| #   | Status | Task                                                              | Priority | Points | Blockers      | Notes                                                                                                                                                                                                                                     |
-| --- | ------ | ----------------------------------------------------------------- | -------- | ------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.1 | [ ]    | Write Zod schemas for Node request/response bodies                | 🔴       | 3      | 1.4           | `src/lib/schemas/node.schema.ts`. Schemas for create, update (partial), and each subtype's `data` payload.                                                                                                                                |
-| 4.2 | [ ]    | Create `NodeService.ts` skeleton                                  | 🔴       | 3      | 2.2           | `src/services/NodeService.ts`. Methods: `createNode`, `getNodeById`, `listNodes`, `updateNode`, `deleteNode`. Every read must JOIN `node_links` and populate `linkedNodeIds` on the returned object — it is never stored in `nodes.data`. |
-| 4.3 | [ ]    | `GET /api/nodes` — list all nodes for authenticated user          | 🔴       | 2      | 3.3, 4.1, 4.2 | Scoped to `userId` from session. Support optional `?type=` query param filter. Returns array of nodes.                                                                                                                                    |
-| 4.4 | [ ]    | `POST /api/nodes` — create a new node                             | 🔴       | 2      | 4.3           | Validates body with Zod. Generates `id` (UUID), sets `createdAt`/`updatedAt`. Returns 201 + created node.                                                                                                                                 |
-| 4.5 | [ ]    | `GET /api/nodes/[id]` — get a single node by ID                   | 🟠       | 1      | 4.3           | Returns 404 if not found or not owned by session user.                                                                                                                                                                                    |
-| 4.6 | [ ]    | `PATCH /api/nodes/[id]` — partial update a node                   | 🟠       | 2      | 4.5           | Merges `data` JSONB field (don't overwrite unrelated keys). Updates `updatedAt`. Returns updated node.                                                                                                                                    |
-| 4.7 | [ ]    | `DELETE /api/nodes/[id]` — soft delete (set `status = "deleted"`) | 🟠       | 1      | 4.5           | Does not remove the DB row. Returns 204 on success.                                                                                                                                                                                       |
-| 4.8 | [ ]    | Node ownership guard (shared middleware helper)                   | 🟠       | 2      | 3.3           | `src/lib/nodeGuard.ts`: fetches node, verifies `userId` matches session. Throws 403 if mismatch. Reused by 4.5, 4.6, 4.7.                                                                                                                 |
-| 4.9 | [ ]    | Link management endpoints (`POST`/`DELETE /api/nodes/[id]/links`) | 🟠       | 3      | 4.5, 4.8      | Writes to/deletes from `node_links` table only — never touches `nodes.data`. `POST` body: `{ targetNodeId }`. Returns updated `linkedNodeIds` array derived from a fresh JOIN.                                                            |
+| #   | Status | Task                                                             | Priority | Points | Blockers | Notes                                                                                                                                                                         |
+| --- | ------ | ---------------------------------------------------------------- | -------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1 | [ ]    | Create Node API client module for frontend data access           | 🔴       | 3      | 4.8      | Add `src/store/api/nodesApi.ts` with helpers for list/get/create/update/delete/link/unlink using existing `/api/nodes` endpoints.                                             |
+| 2.2 | [ ]    | Add async thunks for node fetch + mutations                      | 🔴       | 5      | 2.1, 1.4 | Implement thunks (`fetchNodes`, `createNodeThunk`, `updateNodeThunk`, `deleteNodeThunk`, `createLinkThunk`, `deleteLinkThunk`) and integrate with `nodesSlice.extraReducers`. |
+| 2.3 | [ ]    | Add consistent loading and error handling across node operations | 🟠       | 2      | 2.2      | Standardize pending/fulfilled/rejected handling and expose user-friendly error state for UI.                                                                                  |
+| 2.4 | [ ]    | Add typed selector helpers for task filtering                    | 🟠       | 2      | 2.2      | Selector set should cover: all tasks, active tasks only, and tasks by `energyLevel`.                                                                                          |
+
+### 3. Layout Shell + Task List UI
+
+| #   | Status | Task                                                    | Priority | Points | Blockers | Notes                                                                                                                                                       |
+| --- | ------ | ------------------------------------------------------- | -------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.1 | [ ]    | Build single-panel application shell                    | 🔴       | 5      | 1.2      | Implement sidebar navigation + main content region with responsive behavior in `src/app/page.tsx` (or routed dashboard page), preserving current auth flow. |
+| 3.2 | [ ]    | Create reusable `NodeCard` component with type variants | 🟠       | 5      | 3.1      | Add `src/components/NodeCard.tsx` with visual/state variants for Task/Event/Idea/Project, driven by node `type`.                                            |
+| 3.3 | [ ]    | Build Task List view with energy filter controls        | 🔴       | 3      | 3.1, 2.4 | Render Task cards and filter toggles/chips for `deep`, `light`, `quick`, plus `all`.                                                                        |
+| 3.4 | [ ]    | Wire Task List to Redux node selectors and thunks       | 🔴       | 3      | 3.3, 2.2 | Fetch nodes on initial load, derive task view from selectors, and render loading/empty/error states.                                                        |
+| 3.5 | [ ]    | Add basic node action handlers from cards               | 🟠       | 3      | 3.2, 2.2 | At minimum: archive/delete and quick status toggles where applicable, routed through Redux thunks to existing API endpoints.                                |
+
+### 4. Validation & Tests
+
+| #   | Status | Task                                                              | Priority | Points | Blockers                | Notes                                                                     |
+| --- | ------ | ----------------------------------------------------------------- | -------- | ------ | ----------------------- | ------------------------------------------------------------------------- |
+| 4.1 | [ ]    | Add reducer/unit tests for new slices                             | 🟠       | 3      | 1.3, 1.4, 1.5, 1.6, 1.7 | Cover initial state + key transitions for each slice.                     |
+| 4.2 | [ ]    | Add selector tests for task energy filtering                      | 🟠       | 2      | 2.4                     | Validate filtering behavior for mixed node sets and empty states.         |
+| 4.3 | [ ]    | Add UI tests for Task List loading, empty, and filtered rendering | 🟠       | 3      | 3.4                     | Use existing test setup style under `src/__tests__`.                      |
+| 4.4 | [ ]    | Phase 2 integration smoke test (`login -> load nodes -> filter`)  | 🔵       | 2      | 4.3                     | Lightweight manual QA checklist acceptable if full e2e is not set up yet. |
 
 ---
 
@@ -147,43 +153,44 @@ IMPORTANT CONTEXT FILES
 
 > Expand the relevant section into a full task table when the current phase is complete.
 
-### Phase 2 — Redux Store + Window Manager
+### Phase 3 — Morning 3, Inbox, Daily Reset
 
-- Set up Redux store with slices: `nodesSlice`, `windowsSlice`, `authSlice`
-- Prototype window manager (evaluate `react-mosaic-layout` vs. `react-resizable-panels`)
-- Connect Node API calls to Redux via RTK Query or `createAsyncThunk`
-- Basic layout shell: sidebar, window container
+- **Morning 3:** on first open of the day, lock exactly 3 task picks; only those 3 shown prominently
+- **Inbox / Idea Dump:** global quick-add (`Cmd+Shift+Space`); raw `Idea` Nodes land here; triage: convert to Task, schedule, or delete
+- **Daily Reset:** on first open of a new day, surface each overdue task with Reschedule / Defer / Delete options; one at a time, < 20 sec per item
+- Node conversion (Idea → Task preserving core metadata)
 
-### Phase 3 — Core UI: Dashboard & Node Cards
+### Phase 4 — Focus Mode
 
-- Node card component (renders Task / Event / Idea / Project variants)
-- Dashboard view: Today's Tasks, Overdue Tasks, Active Projects, Upcoming Deadlines
-- Create/edit Node modal
-- Time-window aware layout (morning vs. day vs. evening defaults)
+- "Start" button on every task card
+- Full-screen focus overlay: hides all other UI chrome
+- Timer component: user sets countdown (any duration) or uses stopwatch mode
+- `lastTouchedAt` and `actualDuration` updated per session via PATCH
+- Smooth entry and exit transitions
 
-### Phase 4 — Calendar
+### Phase 5 — Command Palette + Quick Add + NLP Entry
 
-- Calendar views: Day, Week, Month
-- Drag-and-drop Node to time slot (updates `dueDate` / `startTime`)
-- Event rendering on time grid
+- Command palette powered by `cmdk`: `Cmd+K` or `/` opens it from any view
+- All create / navigate / start actions accessible from palette
+- Global quick-add shortcut (`Cmd+Shift+Space`) — captures to Inbox without navigation
+- Rule-based NLP date/time parsing via `chrono-node` for natural language task/event entry
 
-### Phase 5 — Projects & Inbox
+### Phase 6 — Calendar + Universal Search (v1.1)
 
-- Project hierarchy view (Area → Project → Nodes)
-- Overdue task triage flow (Reschedule / Scrap)
-- Brain Dump inbox (raw Idea nodes)
-- Node conversion (right-click → change type)
-
-### Phase 6 — Universal Search + Polish (v1.1)
-
-- Global omnibar (`Cmd+K`)
-- Full-text search + filter syntax (`type:task`, `due:today`, etc.)
+- Calendar Day and Week views
+- Drag any task to a time slot to set `dueDate` without changing type
+- Universal search: full-text on `title`, `description`, `tags`; filter shortcuts (`energy:deep`, `due:today`)
 - Google Calendar sync (OAuth, two-way Event sync)
-- Performance audit, error boundaries, loading states
 
-### Phase 7 — AI & Advanced Features (v2+)
+### Phase 7 — Anti-Procrastination Suite (v2)
 
-- Brain Dump AI analysis (background, non-blocking)
-- Auto-tagging and Node type suggestions
-- Habit tracking
-- Wiki-style Node linking and backlinks
+- **Task Shrinking:** after 30+ min idle on a large task → "Too big? Split it" prompt → inline task splitter
+- **Why Are You Stuck?:** focus session stopped within 3 min → nudge with "unclear / scary / boring" choice
+- **Micro Commitment:** "Just do 10 minutes" locked timer triggered from stuck flow
+- `splitFromTaskId` linking for split tasks
+
+### Phase 8 — AI Features (v1.1+)
+
+- AI natural language entry: replace `chrono-node` rule parser with LLM parse layer
+- Smart task/event field extraction from freeform text
+- Browser extension for global capture (post-launch, scope TBD)
