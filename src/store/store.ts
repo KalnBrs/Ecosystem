@@ -12,7 +12,7 @@ export const makeStore = () => {
       nodes: nodeReducer,
       auth: authReducer,
       focus: focusReducer,
-      mornign3: morning3Reducer,
+      morning3: morning3Reducer,
       dailyReset: dailyResetReducer
     },
   });
