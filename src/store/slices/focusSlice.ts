@@ -27,3 +27,6 @@ export const focusSlice = createSlice({
 
   }
 })
+
+export const {  } = focusSlice.actions;
+export default focusSlice.reducer;
