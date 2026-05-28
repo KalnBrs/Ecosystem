@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export type focusMode = "stopwatch" | "timer" | null
+export type focusMode = "stopwatch" | "countdown" | null
 
 export interface focusState {
   activeTaskId: string | null,
