@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Node, NodeStatus } from "@/lib/models";
+import { Node, NodeStatus, NodeType } from "@/lib/models";
 
 type NodesStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface NodeFilter {
-  type: string | "all",
+  type: NodeType | "all",
   status: Exclude<NodeStatus, "deleted"> | "all",
   search: string
 }
