@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface MorningState {
-  picksLockedForDate: string | null,
+  picksLockedForDate: string | null, // Last day compleated morning 3, on open compare to current date
   pickedTaskIds: string[],
   selectionComplete: boolean
 }
