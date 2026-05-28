@@ -10,7 +10,7 @@ export interface NodeFilter {
 }
 
 export interface NodeState {
-  items: Node[],
+  items: string[],
   selectedNodeId: string | null,
   status: NodesStatus,
   error: string | null,
