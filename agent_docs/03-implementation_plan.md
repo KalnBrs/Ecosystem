@@ -116,7 +116,7 @@ Phase 1 has been intentionally compressed to keep this file focused on active im
 | 1.3 | [x]    | Implement `authSlice` for session status and current user metadata | 🟠       | 3      | 1.1      | Track `status` (`idle/loading/authenticated/unauthenticated`), user basics (`id`, `email`, `name`), and auth errors.           |
 | 1.4 | [x]    | Implement `nodesSlice` with normalized node state                  | 🔴       | 5      | 1.1      | Store nodes by `id` + ordered id list. Include request status/error and selectors for all nodes, by type, and by id.           |
 | 1.5 | [x]    | Implement `focusSlice` state model                                 | 🟠       | 2      | 1.1      | Keep `activeTaskId`, focus mode flag, timer mode (`countdown`/`stopwatch`), and duration fields for upcoming focus-mode phase. |
-| 1.6 | [ ]    | Implement `morning3Slice` state model                              | 🟠       | 2      | 1.1      | Track selected task ids, lock state, and `lastInitializedDate` for first-open-of-day behavior in next phase.                   |
+| 1.6 | [x]    | Implement `morning3Slice` state model                              | 🟠       | 2      | 1.1      | Track selected task ids, lock state, and `lastInitializedDate` for first-open-of-day behavior in next phase.                   |
 | 1.7 | [ ]    | Implement `dailyResetSlice` state model                            | 🟠       | 2      | 1.1      | Track overdue queue ids, index pointer, and reset completion date for daily reset workflow in next phase.                      |
 
 ### 2. API Wiring Through Redux
