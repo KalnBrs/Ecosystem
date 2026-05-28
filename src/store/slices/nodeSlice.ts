@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Node, NodeStatus, NodeType } from "@/lib/models";
+import { NodeStatus, NodeType } from "@/lib/models";
 
 type NodesStatus = "idle" | "loading" | "succeeded" | "failed";
 

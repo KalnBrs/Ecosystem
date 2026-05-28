@@ -15,7 +15,7 @@ const initialState : DailyResetState = {
 }
 
 export const dailyResetSlice = createSlice({
-  name: 'auth',
+  name: 'dailyReset',
   initialState,
   reducers: {
 

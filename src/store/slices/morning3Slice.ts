@@ -13,7 +13,7 @@ const initialState : MorningState = {
 }
 
 export const morning3Slice = createSlice({
-  name: 'auth',
+  name: 'morning3',
   initialState,
   reducers: {
 
