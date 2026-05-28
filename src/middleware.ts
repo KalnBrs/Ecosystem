@@ -1,45 +1,50 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-const WINDOW_MS = 10_000; // 10 seconds
-const MAX_REQUESTS = 10;
+// 1. Initialize Redis and the Rate Limiter
+const redis = Redis.fromEnv();
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(10, "10 s"), // Max 10 requests per 10 seconds
+  analytics: true,
+});
 
-// In-memory store: ip → array of request timestamps within the current window.
-// NOTE: this is per-Edge-instance. In a multi-region deployment, pair with an
-// external store (e.g. Upstash Redis) for a globally consistent limit.
-const requestLog = new Map<string, number[]>();
+export async function middleware(request: NextRequest) {
+  // 2. Target specific paths (e.g., only API routes)
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    
+    // 3. Get the user's IP address
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      request.headers.get("x-real-ip") ??
+      "127.0.0.1";
+    
+    // 4. Check the rate limit
+    const { success, limit, reset, remaining } = await ratelimit.limit(ip);
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const windowStart = now - WINDOW_MS;
-
-  const timestamps = (requestLog.get(ip) ?? []).filter((t) => t > windowStart);
-  timestamps.push(now);
-  requestLog.set(ip, timestamps);
-
-  return timestamps.length > MAX_REQUESTS;
-}
-
-export function middleware(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown";
-
-  if (isRateLimited(ip)) {
-    return new NextResponse("Too Many Requests", {
-      status: 429,
-      headers: {
-        "Retry-After": String(WINDOW_MS / 1000),
-        "X-RateLimit-Limit": String(MAX_REQUESTS),
-        "X-RateLimit-Window": `${WINDOW_MS / 1000}s`,
-      },
-    });
+    // 5. Block the request if limit is exceeded
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+          },
+        }
+      );
+    }
   }
 
   return NextResponse.next();
 }
 
+// 6. Optional: Optimize middleware execution using a matcher
 export const config = {
-  // Apply to all API routes only
-  matcher: ["/api/:path*"],
+  matcher: "/api/:path*",
 };
