@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Node, NodeStatus, NodeType } from "@/lib/models";
+import { createSlice, createAsyncThunk, createSelector, PayloadAction } from "@reduxjs/toolkit";
+import { Node, NodeStatus, NodeType, Task } from "@/lib/models";
 import {
   createLink,
   createNode,
@@ -298,3 +298,47 @@ export const nodeSlice = createSlice({
 
 export const { setSelectedNodeId, setNodeFilters } = nodeSlice.actions;
 export default nodeSlice.reducer;
+
+// ─── Selectors ────────────────────────────────────────────────────────────────
+
+// Avoids a circular import with store.ts by narrowing the input type locally.
+type NodesRootState = { nodes: NodeState };
+
+const selectNodeEntities = (state: NodesRootState) => state.nodes.entities;
+const selectNodeIds = (state: NodesRootState) => state.nodes.ids;
+
+export const selectNodesStatus = (state: NodesRootState) => state.nodes.status;
+export const selectNodesError = (state: NodesRootState) => state.nodes.error;
+export const selectNodesInitialized = (state: NodesRootState) => state.nodes.initialized;
+
+/** All nodes as an ordered array. */
+export const selectAllNodes = createSelector(
+  selectNodeEntities,
+  selectNodeIds,
+  (entities, ids) => ids.map((id) => entities[id]).filter(Boolean)
+);
+
+function isTask(node: Node): node is Task {
+  return node.type === "task";
+}
+
+/** All nodes where type === "task". */
+export const selectAllTasks = createSelector(selectAllNodes, (nodes) =>
+  nodes.filter(isTask)
+);
+
+/** Tasks that are active (status === "active") and not yet completed. */
+export const selectActiveTasks = createSelector(selectAllTasks, (tasks) =>
+  tasks.filter((t) => t.status === "active" && !t.completed)
+);
+
+/**
+ * Factory that returns a memoized selector for tasks filtered by energy level.
+ * Usage: `const selectDeepTasks = makeSelectTasksByEnergyLevel("deep")`
+ */
+export const makeSelectTasksByEnergyLevel = (
+  energyLevel: "deep" | "light" | "quick"
+) =>
+  createSelector(selectActiveTasks, (tasks) =>
+    tasks.filter((t) => t.energyLevel === energyLevel)
+  );

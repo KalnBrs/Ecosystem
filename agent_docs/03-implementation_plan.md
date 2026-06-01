@@ -125,8 +125,8 @@ Phase 1 has been intentionally compressed to keep this file focused on active im
 | --- | ------ | ---------------------------------------------------------------- | -------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2.1 | [x]    | Create Node API client module for frontend data access           | 🔴       | 3      | 4.8      | Add `src/store/api/nodesApi.ts` with helpers for list/get/create/update/delete/link/unlink using existing `/api/nodes` endpoints.                                             |
 | 2.2 | [x]    | Add async thunks for node fetch + mutations                      | 🔴       | 5      | 2.1, 1.4 | Implement thunks (`fetchNodes`, `createNodeThunk`, `updateNodeThunk`, `deleteNodeThunk`, `createLinkThunk`, `deleteLinkThunk`) and integrate with `nodesSlice.extraReducers`. |
-| 2.3 | [ ]    | Add consistent loading and error handling across node operations | 🟠       | 2      | 2.2      | Standardize pending/fulfilled/rejected handling and expose user-friendly error state for UI.                                                                                  |
-| 2.4 | [ ]    | Add typed selector helpers for task filtering                    | 🟠       | 2      | 2.2      | Selector set should cover: all tasks, active tasks only, and tasks by `energyLevel`.                                                                                          |
+| 2.3 | [x]    | Add consistent loading and error handling across node operations | 🟠       | 2      | 2.2      | Standardize pending/fulfilled/rejected handling and expose user-friendly error state for UI.                                                                                  |
+| 2.4 | [x]    | Add typed selector helpers for task filtering                    | 🟠       | 2      | 2.2      | Selector set should cover: all tasks, active tasks only, and tasks by `energyLevel`.                                                                                          |
 
 ### 3. Layout Shell + Task List UI
 
