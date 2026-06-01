@@ -1,5 +1,13 @@
-export async function listNodes(): Promise<JSON> {
-  const res = await fetch("/api/nodes");
+import { NodeType } from "@/generated/prisma";
+
+export async function listNodes(type?: NodeType): Promise<JSON> {
+  const params = new URLSearchParams();
+
+  if (type) {
+    params.append('type', type);
+  }
+
+  const res = await fetch(`/api/nodes${type ? `?${new URLSearchParams({ type: type })}` : ""}`);
 
   if (!res.ok) {
     const errorData = await res.json();

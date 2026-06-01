@@ -35,13 +35,23 @@ function makeFetchMock(ok: boolean, body: unknown) {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("listNodes", () => {
-  it("calls GET /api/nodes and returns parsed JSON on success", async () => {
+  it("calls GET /api/nodes with no query string when type is omitted", async () => {
     const data = [{ id: NODE_ID, title: "My Task" }];
     global.fetch = makeFetchMock(true, data);
 
     const result = await listNodes();
 
     expect(global.fetch).toHaveBeenCalledWith("/api/nodes");
+    expect(result).toEqual(data);
+  });
+
+  it("appends ?type= when a type is provided", async () => {
+    const data = [{ id: NODE_ID, title: "My Task", type: "task" }];
+    global.fetch = makeFetchMock(true, data);
+
+    const result = await listNodes("task");
+
+    expect(global.fetch).toHaveBeenCalledWith("/api/nodes?type=task");
     expect(result).toEqual(data);
   });
 
