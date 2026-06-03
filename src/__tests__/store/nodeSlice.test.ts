@@ -268,6 +268,7 @@ describe("fetchNodeById", () => {
 // ─── createNodeThunk ──────────────────────────────────────────────────────────
 
 describe("createNodeThunk", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const input = { title: "New Task", type: "task" } as any;
 
   it("sets status to loading on pending", () => {
@@ -311,6 +312,7 @@ describe("updateNodeThunk", () => {
     const updated = makeTask({ title: "New title" });
     mockUpdateNodeById.mockResolvedValue(updated);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await store.dispatch(updateNodeThunk({ nodeId: "task-1", data: { title: "New title" } as any }));
 
     const s = store.getState().nodes;
@@ -322,6 +324,7 @@ describe("updateNodeThunk", () => {
     const store = makeTestStore();
     mockUpdateNodeById.mockRejectedValue(new Error("Not found"));
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await store.dispatch(updateNodeThunk({ nodeId: "task-1", data: {} as any }));
 
     expect(store.getState().nodes.error).toBe("Not found");
