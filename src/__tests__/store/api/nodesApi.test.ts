@@ -37,7 +37,7 @@ function makeFetchMock(ok: boolean, body: unknown) {
 describe("listNodes", () => {
   it("calls GET /api/nodes with no query string when type is omitted", async () => {
     const data = [{ id: NODE_ID, title: "My Task" }];
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await listNodes();
 
@@ -47,7 +47,7 @@ describe("listNodes", () => {
 
   it("appends ?type= when a type is provided", async () => {
     const data = [{ id: NODE_ID, title: "My Task", type: "task" }];
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await listNodes("task");
 
@@ -71,7 +71,7 @@ describe("listNodes", () => {
 describe("getNodeById", () => {
   it("calls GET /api/nodes/:id and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, title: "My Task" };
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await getNodeById(NODE_ID);
 
@@ -97,7 +97,7 @@ describe("createNode", () => {
 
   it("calls POST /api/nodes with JSON body and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, ...payload };
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await createNode(payload);
 
@@ -127,7 +127,7 @@ describe("updateNodeById", () => {
 
   it("calls PATCH /api/nodes/:id with JSON body and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, title: "Updated title" };
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await updateNodeById(NODE_ID, patch);
 
@@ -153,16 +153,14 @@ describe("updateNodeById", () => {
 });
 
 describe("deleteNodeById", () => {
-  it("calls DELETE /api/nodes/:id and returns parsed JSON on success", async () => {
-    const data = { id: NODE_ID };
-    global.fetch = makeFetchMock(true, data);
+  it("calls DELETE /api/nodes/:id and resolves as void on success", async () => {
+    global.fetch = makeFetchMock(true, null);
 
-    const result = await deleteNodeById(NODE_ID);
+    await expect(deleteNodeById(NODE_ID)).resolves.toBeUndefined();
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}`, {
       method: "DELETE",
     });
-    expect(result).toEqual(data);
   });
 
   it("throws the server error message when the response is not ok", async () => {
@@ -181,7 +179,7 @@ describe("deleteNodeById", () => {
 describe("createLink", () => {
   it("calls POST /api/nodes/:id/links with targetNodeId body and returns parsed JSON on success", async () => {
     const data = { outgoingIds: [TARGET_ID], incomingIds: [] };
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await createLink(NODE_ID, TARGET_ID);
 
@@ -209,7 +207,7 @@ describe("createLink", () => {
 describe("deleteLink", () => {
   it("calls DELETE /api/nodes/:id/links with targetNodeId body and returns parsed JSON on success", async () => {
     const data = { outgoingIds: [], incomingIds: [] };
-    global.fetch = makeFetchMock(true, data);
+    global.fetch = makeFetchMock(true, { data });
 
     const result = await deleteLink(NODE_ID, TARGET_ID);
 
