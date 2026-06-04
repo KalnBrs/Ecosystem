@@ -1,28 +1,157 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
 
-/*
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap");
 
 @theme inline {
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-placeholder: var(--placeholder);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+
+  --color-energy-deep: var(--energy-deep);
+  --color-energy-light: var(--energy-light);
+  --color-energy-quick: var(--energy-quick);
+
+  --color-node-task: var(--node-task);
+  --color-node-task-soft: var(--node-task-soft);
+  --color-node-event: var(--node-event);
+  --color-node-event-soft: var(--node-event-soft);
+  --color-node-idea: var(--node-idea);
+  --color-node-idea-soft: var(--node-idea-soft);
+  --color-node-project: var(--node-project);
+  --color-node-project-soft: var(--node-project-soft);
+
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-foreground);
+  --color-secondary: var(--surface);
+  --color-destructive-foreground: var(--foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Dark mode — softer slate-blue/gray palette */
+  --background: #131820;
+  --foreground: #e2e6ef;
+  --sidebar: #0e1219;
+  --surface: #1a2030;
+  --border: #2a3040;
+  --input: #131820;
+  --ring: #3b82f6;
+
+  --muted: #1c2333;
+  --muted-foreground: #8e97a8;
+  --secondary-foreground: #8e97a8;
+  --placeholder: #4e5566;
+
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-foreground: #ffffff;
+  --accent-soft: #152035;
+
+  --destructive: #ef4444;
+  --success: #22c55e;
+
+  --energy-deep: #3b82f6;
+  --energy-light: #8e97a8;
+  --energy-quick: #a1a9b8;
+
+  --node-task: #3b82f6;
+  --node-task-soft: #152035;
+  --node-event: #6b7a94;
+  --node-event-soft: #1c2333;
+  --node-idea: #a1a9b8;
+  --node-idea-soft: #1c2333;
+  --node-project: #4e5566;
+  --node-project-soft: #152035;
+}
+
+html.light {
+  /* Light mode — crisp ivory surfaces, deep teal text, mustard accent */
+  --background: #f7f3e8;
+  --foreground: #0e2b27;
+  --sidebar: #ede7d5;
+  --surface: #ffffff;
+  --border: #e2dcc9;
+  --input: #ffffff;
+  --ring: #1f6b5e;
+
+  --muted: #efe9d8;
+  --muted-foreground: #5a6f6a;
+  --secondary-foreground: #5a6f6a;
+  --placeholder: #9aa49f;
+
+  --accent: #1f6b5e;
+  --accent-hover: #155148;
+  --accent-foreground: #f7f3e8;
+  --accent-soft: #d9ebe6;
+
+  --destructive: #c0392b;
+  --success: #1f7a4a;
+
+  --energy-deep: #1f6b5e;
+  --energy-light: #d99a1f;
+  --energy-quick: #2f8f7d;
+
+  --node-task: #1f6b5e;
+  --node-task-soft: #d9ebe6;
+  --node-event: #d99a1f;
+  --node-event-soft: #fbecc6;
+  --node-idea: #c46a2d;
+  --node-idea-soft: #fde3cf;
+  --node-project: #2f8f7d;
+  --node-project-soft: #d6efe7;
+}
+
+
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+  ::placeholder {
+    color: var(--placeholder);
+  }
+  button {
+    cursor: pointer;
   }
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-*/
