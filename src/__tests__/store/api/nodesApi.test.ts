@@ -55,8 +55,14 @@ describe("listNodes", () => {
     expect(result).toEqual(data);
   });
 
-  it("throws the server error message when the response is not ok", async () => {
+  it("throws the server error message when the response is not ok (error key)", async () => {
     global.fetch = makeFetchMock(false, { error: "Unauthorized" });
+
+    await expect(listNodes()).rejects.toThrow("Unauthorized");
+  });
+
+  it("throws the server error message when the response is not ok (message key)", async () => {
+    global.fetch = makeFetchMock(false, { message: "Unauthorized" });
 
     await expect(listNodes()).rejects.toThrow("Unauthorized");
   });
