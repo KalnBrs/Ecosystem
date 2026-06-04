@@ -1,6 +1,5 @@
-import { NodeType } from "@/generated/prisma";
-import { Node } from "@/lib/models";
-import { CreateNodeInput, UpdateNodeInput } from "@/lib/schemas/node.schema";
+import type { CreateNodeInput, UpdateNodeInput } from "@/lib/schemas/node.schema";
+import { Node, NodeType } from "@/lib/models"
 
 export type LinkResult = { outgoingIds: string[]; incomingIds: string[] };
 
@@ -22,7 +21,7 @@ export async function getNodeById(id: string): Promise<Node> {
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data } = await res.json();
@@ -40,7 +39,7 @@ export async function createNode(data: CreateNodeInput): Promise<Node> {
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data: node } = await res.json();
@@ -58,7 +57,7 @@ export async function updateNodeById(id: string, data: UpdateNodeInput): Promise
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data: node } = await res.json();
@@ -72,7 +71,7 @@ export async function deleteNodeById(id: string): Promise<void> {
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
   // 204 No Content — no body to parse
 }
@@ -88,7 +87,7 @@ export async function createLink(id: string, targetNodeId: string): Promise<Link
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data } = await res.json();
@@ -106,7 +105,7 @@ export async function deleteLink(id: string, targetNodeId: string): Promise<Link
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data } = await res.json();
