@@ -1,5 +1,6 @@
 import { NodeType } from "@/generated/prisma";
 import { Node } from "@/lib/models";
+import { CreateNodeInput, UpdateNodeInput } from "@/lib/schemas/node.schema";
 
 export type LinkResult = { outgoingIds: string[]; incomingIds: string[] };
 
@@ -9,7 +10,7 @@ export async function listNodes(type?: NodeType): Promise<Node[]> {
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Something went wrong");
+    throw new Error(errorData.error || errorData.message || "Something went wrong");
   }
 
   const { data } = await res.json();
@@ -28,7 +29,7 @@ export async function getNodeById(id: string): Promise<Node> {
   return data;
 }
 
-export async function createNode(data: object): Promise<Node> {
+export async function createNode(data: CreateNodeInput): Promise<Node> {
   const res = await fetch("/api/nodes", {
     method: "POST",
     headers: {
@@ -46,7 +47,7 @@ export async function createNode(data: object): Promise<Node> {
   return node;
 }
 
-export async function updateNodeById(id: string, data: object): Promise<Node> {
+export async function updateNodeById(id: string, data: UpdateNodeInput): Promise<Node> {
   const res = await fetch(`/api/nodes/${id}`, {
     method: "PATCH",
     headers: {
