@@ -11,7 +11,7 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 2. Target specific paths (e.g., only API routes)
   if (request.nextUrl.pathname.startsWith("/api")) {
     
