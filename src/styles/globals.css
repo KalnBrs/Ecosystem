@@ -1,8 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap");
+
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap");
 
 @theme inline {
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
@@ -130,8 +130,6 @@ html.light {
   --node-project: #2f8f7d;
   --node-project-soft: #d6efe7;
 }
-
-
 
 @layer base {
   * {
