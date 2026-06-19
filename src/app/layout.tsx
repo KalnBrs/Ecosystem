@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 
 import StoreProvider from "@/store/StoreProvider";
+import Sidebar from "@/components/Sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,12 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <StoreProvider>
-          {children}
+          <div className="">
+            <Sidebar />
+            {/* <div>
+              {children}
+            </div> */}
+          </div>
         </StoreProvider>
       </body>
     </html>
