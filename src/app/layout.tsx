@@ -26,17 +26,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <Providers>
-          <div className="">
+          <div className="flex min-h-screen">
             <Sidebar />
-            {/* <div>
+            <div className="flex-1">
               {children}
-            </div> */}
+            </div>
           </div>
         </Providers>
       </body>
