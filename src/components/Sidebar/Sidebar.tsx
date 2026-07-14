@@ -40,8 +40,8 @@ export default function Sidebar() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className={`${styles.changeIconColor} mx-3`}>
-              <button className="flex flex-row justify-between items-center w-full gap-3">
+            <div className={`text-black ${styles.changeIconColor} mx-3`}>
+              <button className="flex flex-row  justify-between items-center w-full gap-3">
                 <Image src={"/command.svg"} alt="" width={15} height={15} /> 
                 <p>Quick Jump</p>
                 <span className="flex flex-row items-center gap-1">              
