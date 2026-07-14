@@ -25,3 +25,19 @@
   box-shadow: inset 2px 0 0 0 #3B82F6;
   background-color: bg-muted;
 }
+
+.change-icon-color {
+  filter: var(--icon-default);
+}
+
+.tab:hover .change-icon-color  {
+  filter: var(--icon-hover);
+}
+
+.selected .change-icon-color{
+  filter: var(--icon-hover);
+}
+
+.change-icon-color:hover {
+  filter: var(--icon-hover);
+}

@@ -4,14 +4,15 @@ import "./Sidebar.css"
 
 import Image from "next/image"
 import Link from "next/link"
+import ThemeToggle from "./ThemeToggle"
 
 const tabs = [
-  { href: "/inbox",        label: "Inbox" },
-  { href: "/morning3",     label: "Morning 3" },
-  { href: "/tasks",        label: "Tasks" },
-  { href: "/calendar",     label: "Calendar" },
-  { href: "/daily-reset",  label: "Daily Reset" },
-  { href: "/projects",     label: "Projects" },
+  { href: "/inbox",        label: "Inbox",        icon: "inbox-full.svg" },
+  { href: "/morning3",     label: "Morning 3",    icon: "brightness.svg" },
+  { href: "/tasks",        label: "Tasks",        icon: "list-check.svg" },
+  { href: "/calendar",     label: "Calendar",     icon: "calendar-minus.svg"},
+  { href: "/daily-reset",  label: "Daily Reset",  icon: "sparkles.svg"},
+  { href: "/projects",     label: "Projects",     icon: "folder.svg"},
 ]
 
 export default function Sidebar() {
@@ -25,13 +26,13 @@ export default function Sidebar() {
         </div>
         <section className="flex flex-col justify-between border-b-2 h-150">
           <div className="flex flex-col space-y-0.5 flex-1">
-            {tabs.map(({ href, label }) => (
+            {tabs.map(({ href, label, icon }) => (
               <Link
                 key={href}
                 href={href}
                 className={`tab ${pathname === href ? "selected" : ""} flex flex-row`}
               >
-                <Image src={"file.svg"} alt="" width={20} height={20} /> {label}
+                <Image src={icon} alt="" width={20} height={20} className="change-icon-color" /> {label}
               </Link>
             ))}
           </div>
@@ -42,7 +43,8 @@ export default function Sidebar() {
         <div className="flex flex-row items-center">
           <Image src={"file.svg"} alt="" width={30} height={30} />
           <p>Kaelan Brose</p>
-          <Image src ={"file.svg"} alt="" width={20} height={20} />
+          <ThemeToggle />
+
           <Image src ={"file.svg"} alt="" width={20} height={20} />
         </div>
       </div>

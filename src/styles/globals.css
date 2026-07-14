@@ -4,6 +4,8 @@
 @source "../src";
 @import "tw-animate-css";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme inline {
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
@@ -67,6 +69,11 @@
   --input: #131820;
   --ring: #3b82f6;
 
+  --icon-default: invert(66%) sepia(8%) saturate(543%) hue-rotate(182deg)
+    brightness(91%) contrast(89%);
+  --icon-hover: invert(94%) sepia(5%) saturate(347%) hue-rotate(182deg)
+    brightness(101%) contrast(93%);
+
   --muted: #1c2333;
   --muted-foreground: #8e97a8;
   --secondary-foreground: #8e97a8;
@@ -103,6 +110,11 @@ html.light {
   --border: #e2dcc9;
   --input: #ffffff;
   --ring: #1f6b5e;
+
+  --icon-default: invert(44%) sepia(9%) saturate(1028%) hue-rotate(117deg)
+    brightness(92%) contrast(88%);
+  --icon-hover: invert(12%) sepia(21%) saturate(2334%) hue-rotate(124deg)
+    brightness(91%) contrast(96%);
 
   --muted: #efe9d8;
   --muted-foreground: #5a6f6a;
