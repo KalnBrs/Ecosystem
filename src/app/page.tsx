@@ -3,7 +3,7 @@
 export default function Home() {
   return (
     <div>
-      <div style={{background: "red"}} className="flex ">
+      <div className="flex ">
         hello
       </div>
     </div>

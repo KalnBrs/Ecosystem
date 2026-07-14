@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 
 import Image from 'next/image'
 
+import styles from "./Sidebar.module.css"
+
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -18,9 +20,17 @@ export default function ThemeToggle() {
 
   return (
     <button
+      type="button"
+      aria-label="Toggle theme"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
-      <Image src = {theme == 'dark' ? 'brightness.svg' : 'moon.svg'} alt="" width={20} height={20} className="block light:hidden change-icon-color" />
+      <Image
+        src={theme === 'dark' ? '/brightness.svg' : '/moon.svg'}
+        alt=""
+        width={20}
+        height={20}
+        className={`block ${styles.changeIconColor}`}
+      />
     </button>
   )
 }

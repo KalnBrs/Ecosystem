@@ -1,9 +1,10 @@
 .sidebar {
-  background-color: #0D1219;
+  background-color: var(--sidebar);
+  color: var(--foreground);
 }
 
 .title {
-  color: #3B82F6;
+  color: var(--accent);
 }
 
 .tab {
@@ -16,28 +17,28 @@
 }
 
 .tab:hover {
-  background-color: #1B2333;
+  background-color: var(--muted);
 }
 
 .selected {
   border: none;
   /* Horizontal offset 2px, no vertical offset, no blur, no spread */
-  box-shadow: inset 2px 0 0 0 #3B82F6;
-  background-color: bg-muted;
+  box-shadow: inset 2px 0 0 0 var(--accent);
+  background-color: var(--muted);
 }
 
-.change-icon-color {
+.changeIconColor {
   filter: var(--icon-default);
 }
 
-.tab:hover .change-icon-color  {
+.tab:hover .changeIconColor {
   filter: var(--icon-hover);
 }
 
-.selected .change-icon-color{
+.selected .changeIconColor {
   filter: var(--icon-hover);
 }
 
-.change-icon-color:hover {
+.changeIconColor:hover {
   filter: var(--icon-hover);
 }

@@ -1,11 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap");
 
 @import "tailwindcss";
-@source "../src";
+@source "../**/*.{ts,tsx,js,jsx,mdx}";
 @import "tw-animate-css";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
+@custom-variant dark (&:where(.dark, .dark *));
 @theme inline {
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
