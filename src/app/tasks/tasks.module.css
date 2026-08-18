@@ -1,0 +1,102 @@
+.actions {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.node {
+  height: 4rem;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease, border-radius 0.15s ease;
+}
+
+.node:hover .actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.node:hover {
+  box-shadow: 0 0 0 1px var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+}
+
+.timeText {
+  color: var(--muted-foreground)
+}
+
+.startButton {
+  background-color: var(--accent);
+  color: white;
+  border-radius: var(--radius-md);
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+.startButton:hover {
+  background-color: var(--accent-hover);
+}
+
+.calendar {
+  box-shadow: 0 0 0 1px var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.625rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.15s ease;
+}
+
+.calendar:hover {
+  background-color: var(--sidebar);
+}
+
+.energyLevel {
+  box-shadow: 0 0 0 1px;
+  border-radius: 24px;
+}
+
+.energyDeep {
+  color: var(--energy-deep);
+  background-color: color-mix(in oklab, var(--energy-deep) 15%, transparent);
+}
+
+.energyLight {
+  color: var(--energy-light);
+  background-color: color-mix(in oklab, var(--energy-light) 15%, transparent);
+}
+
+.energyQuick {
+  color: var(--energy-quick);
+  background-color: color-mix(in oklab, var(--energy-quick) 15%, transparent);
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--muted-foreground);
+  background-color: transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox:hover {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.checkboxChecked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l3 3 5-6' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 65%;
+}

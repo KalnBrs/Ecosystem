@@ -164,3 +164,19 @@ html.light {
     cursor: pointer;
   }
 }
+
+.changeIconColor {
+  filter: var(--icon-default);
+}
+
+.changeIconColor:hover {
+  filter: var(--icon-hover);
+}
+
+.changeIconColorStatic {
+  filter: var(--icon-default);
+}
+
+.changeIconColorStatic:hover {
+  filter: var(--icon-default);
+}

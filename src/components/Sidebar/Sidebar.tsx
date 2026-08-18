@@ -34,13 +34,13 @@ export default function Sidebar() {
                 href={href}
                 className={`${styles.tab} ${pathname === href ? styles.selected : ""} flex flex-row my-0.5`}
               >
-                <Image src={icon} alt="" width={20} height={20} className={styles.changeIconColor} /> {label}
+                <Image src={icon} alt="" width={20} height={20} className="changeIconColor" /> {label}
               </Link>
             ))}
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className={`text-black ${styles.changeIconColor} mx-3`}>
+            <div className="text-black changeIconColor mx-3">
               <button className="flex flex-row  justify-between items-center w-full gap-3">
                 <Image src={"/command.svg"} alt="" width={15} height={15} /> 
                 <p>Quick Jump</p>
@@ -56,7 +56,7 @@ export default function Sidebar() {
               </div>
               <p className="text-sm w-25 text-left">{session?.user.name ? session?.user.name : "name"}</p>
               <ThemeToggle />
-              <Image src={"/settings.svg"} alt="" width={20} height={20} className={styles.changeIconColor} />
+              <Image src={"/settings.svg"} alt="" width={20} height={20} className="changeIconColor" />
             </div>
           </div>
         </div>
