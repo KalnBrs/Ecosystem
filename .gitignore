@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Javascript seed
 prisma/seed.js
+
+#agent docs
+/agent_docs
