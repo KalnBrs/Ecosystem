@@ -67,7 +67,7 @@ export default function TaskElement({ task }: { task: TaskData }) {
         </div>
       </div>
 
-      <div className={`${styles.actions} flex flex-row gap-3 px-2`}>
+      <div className={`${styles.actions} flex flex-row gap-1 px-1`}>
         <button className={styles.calendar}>
           <Image src="/calendar-minus.svg" alt="Calendar" width={15} height={15} className="changeIconColor" />
         </button>
