@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import { Node, NodeStatus, NodeType, Task } from "@/lib/models";
 import {
-  createLink,
-  createNode,
-  deleteLink,
-  deleteNodeById,
-  getNodeById,
-  listNodes,
-  updateNodeById,
+  submitCreateLink,
+  submitCreateNode,
+  submitDeleteLink,
+  submitDeleteNodeById,
+  submitGetNodeById,
+  submitListNodes,
+  submitUpdateNodeById,
   type LinkResult,
 } from "../api/nodesApi";
 import { CreateNodeInput, UpdateNodeInput } from "@/lib/schemas/node.schema";
@@ -38,7 +38,7 @@ export const fetchNodes = createAsyncThunk<Node[], NodeType | undefined, ThunkCo
   "node/fetchNodes",
   async (type, thunkAPI) => {
     try {
-      return await listNodes(type);
+      return await submitListNodes(type);
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
     }
@@ -49,7 +49,7 @@ export const fetchNodeById = createAsyncThunk<Node, string, ThunkConfig>(
   "node/fetchNodeById",
   async (nodeId, thunkAPI) => {
     try {
-      return await getNodeById(nodeId);
+      return await submitGetNodeById(nodeId);
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
     }
@@ -60,7 +60,7 @@ export const createNodeThunk = createAsyncThunk<Node, CreateNodeInput, ThunkConf
   "node/createNode",
   async (data, thunkAPI) => {
     try {
-      return await createNode(data);
+      return await submitCreateNode(data);
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
     }
@@ -71,7 +71,7 @@ export const updateNodeThunk = createAsyncThunk<Node, UpdateNodeArgs, ThunkConfi
   "node/updateNode",
   async ({ nodeId, data }, thunkAPI) => {
     try {
-      return await updateNodeById(nodeId, data);
+      return await submitUpdateNodeById(nodeId, data);
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
     }
@@ -82,7 +82,7 @@ export const deleteNodeThunk = createAsyncThunk<string, string, ThunkConfig>(
   "node/deleteNode",
   async (nodeId, thunkAPI) => {
     try {
-      await deleteNodeById(nodeId);
+      await submitDeleteNodeById(nodeId);
       return nodeId;
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
@@ -94,7 +94,7 @@ export const createLinkThunk = createAsyncThunk<LinkThunkResult, LinkNodeArgs, T
   "node/createLink",
   async ({ nodeId, targetNodeId }, thunkAPI) => {
     try {
-      const result = await createLink(nodeId, targetNodeId);
+      const result = await submitCreateLink(nodeId, targetNodeId);
       return { nodeId, ...result };
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
@@ -106,7 +106,7 @@ export const deleteLinkThunk = createAsyncThunk<LinkThunkResult, LinkNodeArgs, T
   "node/deleteLink",
   async ({ nodeId, targetNodeId }, thunkAPI) => {
     try {
-      const result = await deleteLink(nodeId, targetNodeId);
+      const result = await submitDeleteLink(nodeId, targetNodeId);
       return { nodeId, ...result };
     } catch (err) {
       return thunkAPI.rejectWithValue(err instanceof Error ? err.message : String(err));
