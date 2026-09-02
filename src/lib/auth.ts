@@ -57,7 +57,11 @@ export const authOptions: NextAuthOptions = {
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt" as const },
+  session: {
+    strategy: "jwt" as const,
+    // Extend session lifetime outside production so local/dev testing doesn't require frequent re-logins.
+    maxAge: process.env.NODE_ENV === "production" ? 30 * 24 * 60 * 60 : 365 * 24 * 60 * 60,
+  },
   pages: {
     signIn: "/login"
   }
