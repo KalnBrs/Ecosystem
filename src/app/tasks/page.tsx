@@ -4,8 +4,9 @@ import Image from "next/image"
 import { useDispatch, useSelector } from "react-redux"
 import styles from "./tasks.module.css"
 import TaskElement, { TaskData } from "./_components/TaskElement"
+import CreateTaskInline, { CreateTaskDraft } from "./_components/CreateTaskInline"
 import type { AppDispatch } from "@/store/store"
-import { fetchNodes, selectActiveTasks, selectAllNodes, selectNodesError, selectNodesStatus } from "@/store/slices/nodeSlice"
+import { createNodeThunk, fetchNodes, selectActiveTasks, selectAllNodes, selectNodesError, selectNodesStatus } from "@/store/slices/nodeSlice"
 import type { Task } from "@/lib/models"
 
 type EnergyFilter = "all" | "deep" | "light" | "quick"
@@ -39,6 +40,21 @@ export default function Home() {
 
   const [energyFilter, setEnergyFilter] = useState<EnergyFilter>("all")
   const [projectFilter, setProjectFilter] = useState<string | null>(null)
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
+
+  const handleCreateTask = (draft: CreateTaskDraft) => {
+    dispatch(
+      createNodeThunk({
+        type: "task",
+        title: draft.title,
+        status: "active",
+        tags: [],
+        description: "",
+        data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
+      })
+    )
+    setIsCreatingTask(false)
+  }
 
   useEffect(() => {
     dispatch(fetchNodes())
@@ -122,10 +138,14 @@ export default function Home() {
         )}
       </div>
 
-      <button className={styles.addTask}>
-        <span className={styles.plusIcon}>+</span>
-        Add task
-      </button>
+      {isCreatingTask ? (
+        <CreateTaskInline onSave={handleCreateTask} onCancel={() => setIsCreatingTask(false)} />
+      ) : (
+        <button className={styles.addTask} onClick={() => setIsCreatingTask(true)}>
+          <span className={styles.plusIcon}>+</span>
+          Add task
+        </button>
+      )}
     </div>
   )
 }

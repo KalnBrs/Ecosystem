@@ -160,3 +160,46 @@
   width: 1rem;
   height: 1rem;
 }
+
+.createTask {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in oklab, var(--accent) 8%, transparent);
+  padding: 0.875rem 1rem;
+}
+
+.createTaskInput {
+  background: transparent;
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+.createTaskInput:focus {
+  outline: none;
+}
+
+.createTaskInput::placeholder {
+  color: var(--muted-foreground);
+}
+
+.createTaskEnergy {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: color 0.15s ease;
+}
+
+.createTaskEnergy:hover {
+  color: var(--foreground);
+}
+
+.createTaskEnergyActive {
+  color: var(--foreground);
+  background-color: color-mix(in oklab, var(--accent) 8%, transparent);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-lg);
+}
