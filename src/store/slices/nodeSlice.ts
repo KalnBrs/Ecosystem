@@ -208,16 +208,36 @@ export const nodeSlice = createSlice({
 
     // ── createNodeThunk ───────────────────────────────────────────────────────
     builder
-      .addCase(createNodeThunk.pending, (state) => {
-        state.status = "loading";
+      .addCase(createNodeThunk.pending, (state, action) => {
         state.error = null;
+        const tempId = `temp-${action.meta.requestId}`;
+        const input = action.meta.arg;
+        const now = new Date().toISOString();
+        upsertNode(state, {
+          id: tempId,
+          title: input.title,
+          description: input.description ?? "",
+          type: input.type,
+          createdAt: now,
+          updatedAt: now,
+          userId: "",
+          tags: input.tags ?? [],
+          outgoingLinkedNodeIds: [],
+          incomingLinkedNodeIds: [],
+          status: input.status,
+          ...input.data,
+        } as unknown as Node);
       })
       .addCase(createNodeThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        const tempId = `temp-${action.meta.requestId}`;
+        delete state.entities[tempId];
+        state.ids = state.ids.filter((id) => id !== tempId);
         upsertNode(state, action.payload);
       })
       .addCase(createNodeThunk.rejected, (state, action) => {
-        state.status = "failed";
+        const tempId = `temp-${action.meta.requestId}`;
+        delete state.entities[tempId];
+        state.ids = state.ids.filter((id) => id !== tempId);
         state.error = action.payload ?? "Failed to create node";
       });
 
