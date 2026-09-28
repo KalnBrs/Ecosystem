@@ -1,12 +1,10 @@
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
-import { useDispatch, useSelector } from "react-redux"
 import styles from "./tasks.module.css"
 import TaskElement, { TaskData } from "./_components/TaskElement"
 import CreateTaskInline, { CreateTaskDraft } from "./_components/CreateTaskInline"
-import type { AppDispatch } from "@/store/store"
-import { createNodeThunk, fetchNodes, selectActiveTasks, selectAllNodes, selectNodesError, selectNodesStatus } from "@/store/slices/nodeSlice"
+import { useCreateNode, useNodes } from "@/queries/nodeQueries"
 import type { Task } from "@/lib/models"
 
 type EnergyFilter = "all" | "deep" | "light" | "quick"
@@ -32,33 +30,33 @@ function toTaskData(task: Task): TaskData {
 }
 
 export default function Home() {
-  const dispatch = useDispatch<AppDispatch>()
-  const status = useSelector(selectNodesStatus)
-  const error = useSelector(selectNodesError)
-  const tasks = useSelector(selectActiveTasks)
-  const allNodes = useSelector(selectAllNodes)
+  const { data: allNodes = [], isLoading, isError, error } = useNodes()
+  const { mutate: createNode } = useCreateNode()
 
   const [energyFilter, setEnergyFilter] = useState<EnergyFilter>("all")
   const [projectFilter, setProjectFilter] = useState<string | null>(null)
   const [isCreatingTask, setIsCreatingTask] = useState(false)
 
+  const tasks = useMemo(
+    () =>
+      allNodes.filter(
+        (node): node is Task =>
+          node.type === "task" && node.status === "active" && !node.completed
+      ),
+    [allNodes]
+  )
+
   const handleCreateTask = (draft: CreateTaskDraft) => {
-    dispatch(
-      createNodeThunk({
-        type: "task",
-        title: draft.title,
-        status: "active",
-        tags: [],
-        description: "",
-        data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
-      })
-    )
+    createNode({
+      type: "task",
+      title: draft.title,
+      status: "active",
+      tags: [],
+      description: "",
+      data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
+    })
     setIsCreatingTask(false)
   }
-
-  useEffect(() => {
-    dispatch(fetchNodes())
-  }, [dispatch])
 
   const projectTitleById = useMemo(() => {
     const map = new Map<string, string>()
@@ -83,8 +81,6 @@ export default function Home() {
       return true
     })
   }, [tasks, energyFilter, projectFilter])
-
-  const isLoading = status === "loading"
 
   return (
     <div className="flex flex-col mx-24 my-10 gap-3">
@@ -126,9 +122,13 @@ export default function Home() {
 
       <div className="flex flex-col">
         {isLoading ? (
-          <p className={`text-sm ${styles.timeText}`}>Loading tasks...</p>
-        ) : error ? (
-          <p className={`text-sm ${styles.timeText}`}>{error}</p>
+          <div className="flex flex-col gap-2">
+            {[0, 1, 2].map(i => (
+              <div key={i} className={styles.skeletonRow} />
+            ))}
+          </div>
+        ) : isError ? (
+          <p className={`text-sm ${styles.timeText}`}>{error instanceof Error ? error.message : "Something went wrong"}</p>
         ) : filteredTasks.length > 0 ? (
           filteredTasks.map(task => (
             <TaskElement key={task.id} task={toTaskData(task)} />

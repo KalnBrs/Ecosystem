@@ -1,5 +1,7 @@
 "use client"
 import { useMemo, useState } from "react"
+import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
+import Toast from "@/_components/Toast"
 import Image from "next/image"
 import styles from "../tasks.module.css"
 
@@ -34,7 +36,7 @@ const energyColorClass: Record<EnergyLevel, string> = {
 }
 
 export default function TaskElement({ task }: { task: TaskData }) {
-  const [checked, setChecked] = useState(task.completed)
+  const [isChecked, toggleCheckedStatus, { isPendingUndo, undo }] = useTaskChecks(task.completed);
   const energy = task.energyLevel
 
   const [now] = useState(() => Date.now())
@@ -49,13 +51,13 @@ export default function TaskElement({ task }: { task: TaskData }) {
     <div className={`${styles.node} flex items-center gap-3 px-4`}>
       <button
         role="checkbox"
-        aria-checked={checked}
-        onClick={() => setChecked(prev => !prev)}
-        className={`${styles.checkbox} ${checked ? styles.checkboxChecked : ""} shrink-0`}
+        aria-checked={isChecked}
+        onClick={() => toggleCheckedStatus(task)}
+        className={`${styles.checkbox} ${isChecked ? styles.checkboxChecked : ""} shrink-0`}
       />
 
       <div className="flex-1">
-        <p className={`text-md ${checked ? "line-through opacity-50" : ""}`}>{task.title}</p>
+        <p className={`text-md ${isChecked ? "line-through opacity-50" : ""}`}>{task.title}</p>
         <div className="flex flex-row gap-2">
           {timeAgo && <p className={`text-xs ${styles.timeText}`}>{timeAgo}</p>}
           {task.projectId && (
@@ -84,6 +86,15 @@ export default function TaskElement({ task }: { task: TaskData }) {
 
       {energy && (
         <p className={`${styles.energyLevel} ${energyColorClass[energy]} p-1 px-2 text-xs font-bold`}>{energyLabels[energy]}</p>
+      )}
+
+      {isPendingUndo && (
+        <Toast
+          message={isChecked ? "Task marked complete" : "Task marked incomplete"}
+          actionLabel="Undo"
+          onAction={undo}
+          durationMs={UNDO_WINDOW_MS}
+        />
       )}
     </div>
   )
