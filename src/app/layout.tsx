@@ -32,9 +32,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <div className="flex min-h-screen">
+          <div className="flex h-screen overflow-hidden">
             <Sidebar />
-            <div className="flex-1 m-10">
+            <div className="flex-1 m-10 overflow-hidden flex flex-col">
               {children}
             </div>
           </div>
