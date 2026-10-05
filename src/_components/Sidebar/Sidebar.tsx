@@ -21,7 +21,7 @@ export default function Sidebar() {
   const { data: session } = useSession()
 
   return (
-    <div className={`${styles.sidebar} w-auto min-h-screen border-r-2 shrink-0`}>
+    <div className={`${styles.sidebar} w-auto h-full border-r-2 shrink-0`}>
       <div className="mx-3 flex flex-col h-full">
         <div className="flex items-center h-20">
           <h1 className={`${styles.title} font-bold`}>Ecosystem</h1>
