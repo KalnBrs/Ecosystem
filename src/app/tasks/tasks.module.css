@@ -1,3 +1,12 @@
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .actions {
   opacity: 0;
   transform: translateX(8px);
@@ -7,6 +16,7 @@
 
 .node {
   height: 4rem;
+  flex-shrink: 0;
   transition: box-shadow 0.15s ease, background-color 0.15s ease, border-radius 0.15s ease;
 }
 
@@ -23,15 +33,6 @@
 
 .skeletonRow:nth-child(3) {
   animation-delay: 0.3s;
-}
-
-@keyframes skeletonPulse {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
 }
 
 .node:hover .actions {
@@ -226,4 +227,16 @@
   background-color: color-mix(in oklab, var(--accent) 8%, transparent);
   padding: 0.2rem 0.5rem;
   border-radius: var(--radius-lg);
+}
+
+.editTaskWindow {
+  background-color: black;
+}
+
+.taskListScroll {
+  overflow-y: auto;
+}
+
+.taskListScroll TaskElement {
+  flex-shrink: 0;
 }

@@ -180,3 +180,8 @@ html.light {
 .changeIconColorStatic:hover {
   filter: var(--icon-default);
 }
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
