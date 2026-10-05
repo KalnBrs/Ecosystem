@@ -1,27 +1,14 @@
 "use client"
 import { useMemo, useState } from "react"
-import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
-import Toast from "@/_components/Toast"
 import Image from "next/image"
+
 import styles from "../tasks.module.css"
 
-type EnergyLevel = "deep" | "light" | "quick"
+import Toast from "@/_components/Toast"
+import TaskEditWindow from "./TaskEditWindow"
 
-export type TaskData = {
-  id: string
-  title: string
-  description: string
-  userId: string
-  tags: string[]
-  status: string
-  completed: boolean
-  updatedAt: string
-  dueDate?: string
-  energyLevel?: EnergyLevel
-  projectId?: string
-  estimatedDuration?: number
-  actualDuration?: number
-}
+import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
+import type { EnergyLevel, TaskData } from "@/@types"
 
 const energyLabels: Record<EnergyLevel, string> = {
   deep: "DEEP",
@@ -35,7 +22,15 @@ const energyColorClass: Record<EnergyLevel, string> = {
   quick: styles.energyQuick,
 }
 
-export default function TaskElement({ task }: { task: TaskData }) {
+type TaskElementProps = {
+  task: TaskData
+  projects: { id: string; title: string }[]
+  isSelected: boolean
+  onSelect: (taskId: string) => void
+  onClose: () => void
+}
+
+export default function TaskElement({ task, projects, isSelected, onSelect, onClose }: TaskElementProps) {
   const [isChecked, toggleCheckedStatus, { isPendingUndo, undo }] = useTaskChecks(task.completed);
   const energy = task.energyLevel
 
@@ -48,11 +43,14 @@ export default function TaskElement({ task }: { task: TaskData }) {
   }, [task.updatedAt, now])
 
   return (
-    <div className={`${styles.node} flex items-center gap-3 px-4`}>
+    <div className={`${styles.node} flex items-center gap-3 px-4 cursor-pointer m-1`} onClick={() => onSelect(task.id)}>
       <button
         role="checkbox"
         aria-checked={isChecked}
-        onClick={() => toggleCheckedStatus(task)}
+        onClick={e => {
+          e.stopPropagation()
+          toggleCheckedStatus(task)
+        }}
         className={`${styles.checkbox} ${isChecked ? styles.checkboxChecked : ""} shrink-0`}
       />
 
@@ -69,7 +67,7 @@ export default function TaskElement({ task }: { task: TaskData }) {
         </div>
       </div>
 
-      <div className={`${styles.actions} flex flex-row gap-4 px-1 `}>
+      <div className={`${styles.actions} flex flex-row gap-4 px-1 `} onClick={e => e.stopPropagation()}>
         <button className={styles.calendar}>
           <Image src="/calendar-minus.svg" alt="Calendar" width={15} height={15} className="changeIconColor" />
         </button>
@@ -89,12 +87,25 @@ export default function TaskElement({ task }: { task: TaskData }) {
       )}
 
       {isPendingUndo && (
-        <Toast
-          message={isChecked ? "Task marked complete" : "Task marked incomplete"}
-          actionLabel="Undo"
-          onAction={undo}
-          durationMs={UNDO_WINDOW_MS}
-        />
+        <div onClick={e => e.stopPropagation()}>
+          <Toast
+            message={isChecked ? "Task marked complete" : "Task marked incomplete"}
+            actionLabel="Undo"
+            onAction={undo}
+            durationMs={UNDO_WINDOW_MS}
+          />
+        </div>
+      )}
+
+      {isSelected && (
+        <div onClick={e => e.stopPropagation()}>
+          <TaskEditWindow
+            task={task}
+            projects={projects}
+            onClose={onClose}
+            onMarkDone={() => !isChecked && toggleCheckedStatus(task)}
+          />
+        </div>
       )}
     </div>
   )

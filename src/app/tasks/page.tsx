@@ -1,33 +1,17 @@
 "use client"
 import { useMemo, useState } from "react"
 import Image from "next/image"
+
 import styles from "./tasks.module.css"
-import TaskElement, { TaskData } from "./_components/TaskElement"
+
+import TaskElement from "./_components/TaskElement"
 import CreateTaskInline, { CreateTaskDraft } from "./_components/CreateTaskInline"
 import { useCreateNode, useNodes } from "@/queries/nodeQueries"
-import type { Task } from "@/lib/models"
 
-type EnergyFilter = "all" | "deep" | "light" | "quick"
+import type { Task } from "@/lib/models"
+import { toTaskData, EnergyFilter } from "./tasks.util"
 
 const energyFilters: EnergyFilter[] = ["all", "deep", "light", "quick"]
-
-function toTaskData(task: Task): TaskData {
-  return {
-    id: task.id,
-    title: task.title,
-    description: task.description,
-    userId: task.userId,
-    tags: task.tags,
-    status: task.status,
-    completed: task.completed,
-    updatedAt: new Date(task.updatedAt).toISOString(),
-    dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : undefined,
-    energyLevel: task.energyLevel,
-    projectId: task.projectId,
-    estimatedDuration: task.estimatedDuration,
-    actualDuration: task.actualDuration,
-  }
-}
 
 export default function Home() {
   const { data: allNodes = [], isLoading, isError, error } = useNodes()
@@ -36,6 +20,7 @@ export default function Home() {
   const [energyFilter, setEnergyFilter] = useState<EnergyFilter>("all")
   const [projectFilter, setProjectFilter] = useState<string | null>(null)
   const [isCreatingTask, setIsCreatingTask] = useState(false)
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   const tasks = useMemo(
     () =>
@@ -66,6 +51,14 @@ export default function Home() {
     return map
   }, [allNodes])
 
+  const projects = useMemo(
+    () =>
+      allNodes
+        .filter(node => node.type === "project" && node.status === "active")
+        .map(node => ({ id: node.id, title: node.title })),
+    [allNodes]
+  )
+
   const projectIds = useMemo(() => {
     const ids = new Set<string>()
     for (const task of tasks) {
@@ -83,8 +76,8 @@ export default function Home() {
   }, [tasks, energyFilter, projectFilter])
 
   return (
-    <div className="flex flex-col mx-24 my-10 gap-3">
-      <div className="flex flex-row justify-between items-center w-full">
+    <div className="flex flex-col mx-24 my-10 gap-3 flex-1 min-h-0">
+      <div className="flex flex-row justify-between items-center w-full shrink-0">
         <p className="text-2xl font-bold">Tasks</p>
         <div className="flex flex-row gap-2">
           {energyFilters.map(filter => (
@@ -100,7 +93,7 @@ export default function Home() {
       </div>
 
       {projectIds.length > 0 && (
-        <div className="flex flex-row gap-1">
+        <div className="flex flex-row gap-1 shrink-0">
           <button
             onClick={() => setProjectFilter(null)}
             className={`${styles.projectTab} ${projectFilter === null ? styles.projectTabActive : ""}`}
@@ -120,7 +113,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex flex-col">
+      <div className={`${styles.taskListScroll} flex flex-col flex-1 min-h-0`}>
         {isLoading ? (
           <div className="flex flex-col gap-2">
             {[0, 1, 2].map(i => (
@@ -131,21 +124,28 @@ export default function Home() {
           <p className={`text-sm ${styles.timeText}`}>{error instanceof Error ? error.message : "Something went wrong"}</p>
         ) : filteredTasks.length > 0 ? (
           filteredTasks.map(task => (
-            <TaskElement key={task.id} task={toTaskData(task)} />
+            <TaskElement
+              key={task.id}
+              task={toTaskData(task)}
+              projects={projects}
+              isSelected={task.id === selectedTaskId}
+              onSelect={setSelectedTaskId}
+              onClose={() => setSelectedTaskId(null)}
+            />
           ))
         ) : (
           <p className={`text-sm ${styles.timeText}`}>No tasks</p>
         )}
-      </div>
 
-      {isCreatingTask ? (
-        <CreateTaskInline onSave={handleCreateTask} onCancel={() => setIsCreatingTask(false)} />
-      ) : (
-        <button className={styles.addTask} onClick={() => setIsCreatingTask(true)}>
-          <span className={styles.plusIcon}>+</span>
-          Add task
-        </button>
-      )}
+        {isCreatingTask ? (
+          <CreateTaskInline onSave={handleCreateTask} onCancel={() => setIsCreatingTask(false)} />
+        ) : (
+          <button className={styles.addTask} onClick={() => setIsCreatingTask(true)}>
+            <span className={styles.plusIcon}>+</span>
+            Add task
+          </button>
+        )}
+      </div>
     </div>
   )
 }

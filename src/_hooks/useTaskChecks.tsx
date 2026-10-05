@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUpdateNode } from "@/queries/nodeQueries";
-import { TaskData } from "@/app/tasks/_components/TaskElement";
+import type { TaskData } from "@/@types";
 
 // Give the user a window to undo an accidental check before it's persisted.
 export const UNDO_WINDOW_MS = 4000;
