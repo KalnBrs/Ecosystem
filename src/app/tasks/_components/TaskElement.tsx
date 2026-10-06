@@ -45,18 +45,26 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
   }, [task.updatedAt, now])
 
   // Due dates are stored as UTC midnight, so format in UTC to avoid a day shift.
-  const dueLabel = useMemo(
-    () => (task.dueDate ? new Date(task.dueDate).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" }) : null),
-    [task.dueDate]
+  const dueLabel = useMemo(() => (
+      task.dueDate ? new Date(task.dueDate).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" }) : null
+    ), [task.dueDate]
   )
 
   // Both sides are calendar dates (due date is UTC midnight, today is local), so the diff is whole days.
   const dueStatus = useMemo(() => {
-    if (!task.dueDate || isChecked) return null
+    if (!task.dueDate || isChecked) {
+      return null
+    } 
+
     const daysLeft = (Date.parse(task.dueDate.slice(0, 10)) - Date.parse(new Date(now).toLocaleDateString("sv"))) / 86_400_000
-    if (daysLeft < 0) return "overdue"
-    return daysLeft < 3 ? "soon" : null
+
+    if (daysLeft < 0) {
+      return "overdue"
+    }  else {
+      return daysLeft < 3 ? "soon" : null
+    }
   }, [task.dueDate, isChecked, now])
+
   const dueClass = dueStatus === "overdue" ? styles.overdue : dueStatus === "soon" ? styles.dueSoon : ""
 
   return (
