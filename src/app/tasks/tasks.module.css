@@ -35,13 +35,15 @@
   animation-delay: 0.3s;
 }
 
-.node:hover .actions {
+.node:hover .actions,
+.nodeActive .actions {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
 }
 
-.node:hover {
+.node:hover,
+.nodeActive {
   box-shadow: 0 0 0 1px var(--border);
   border-radius: var(--radius-md);
   background-color: var(--surface);
@@ -49,6 +51,28 @@
 
 .timeText {
   color: var(--muted-foreground)
+}
+
+.overdue {
+  color: var(--destructive);
+}
+
+.dueSoon {
+  color: var(--warning);
+}
+
+/* Monochrome icon that inherits the surrounding text color; the image is set inline via mask-image. */
+.maskIcon {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 .startButton {
