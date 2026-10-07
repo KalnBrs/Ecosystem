@@ -31,7 +31,7 @@ export default function Home() {
     [allNodes]
   )
 
-  const handleCreateTask = (draft: CreateTaskDraft) => {
+  const handleCreateTask = (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => {
     createNode({
       type: "task",
       title: draft.title,
@@ -39,7 +39,7 @@ export default function Home() {
       tags: [],
       description: "",
       data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
-    })
+    }, { onSuccess: node => options?.openEditor && setSelectedTaskId(node.id) })
     setIsCreatingTask(false)
   }
 

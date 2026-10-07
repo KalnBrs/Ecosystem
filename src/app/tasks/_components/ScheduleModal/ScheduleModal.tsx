@@ -5,9 +5,9 @@ import { createPortal } from "react-dom"
 import styles from "./ScheduleModal.module.css"
 import { fromDateInputValue, toDateInputValue } from "../TaskEditWindow/taskEdit.utils"
 
-import { useEscapeKey } from "@/_hooks/useEscapeKey"
 import { useUpdateNode } from "@/queries/nodeQueries"
 import type { TaskData } from "@/@types"
+import { useKeyPress } from "@/_hooks/useKeyPress"
 
 type Props = {
   task: TaskData
@@ -22,7 +22,7 @@ export default function ScheduleModal({ task, anchor, onClose }: Props) {
   const { mutate: updateNode } = useUpdateNode()
   const [date, setDate] = useState(toDateInputValue(task.dueDate))
 
-  useEscapeKey(onClose)
+  useKeyPress({ key: "Escape" }, onClose)
 
   // Right-aligned to the button; flips above it when there's no room below.
   const opensAbove = anchor.bottom + GAP + POPOVER_HEIGHT > window.innerHeight

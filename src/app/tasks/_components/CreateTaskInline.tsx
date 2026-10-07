@@ -1,12 +1,12 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
 import styles from "../tasks.module.css"
-import { useEscapeKey } from "@/_hooks/useEscapeKey"
 
 import type { EnergyLevel } from "@/@types"
+import { useKeyPress } from "@/_hooks/useKeyPress"
 
 type Props = {
-  onSave: (draft: CreateTaskDraft) => void,
+  onSave: (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => void,
   onCancel: () => void
 }
 
@@ -22,24 +22,25 @@ export default function CreateTaskInline({ onSave, onCancel }: Props) {
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel>("light")
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEscapeKey(onCancel);
-
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
-  const handleSubmit = () => {
+  const handleSubmit = (openEditor = false) => {
     const trimmed = title.trim()
     if (!trimmed) return
-    onSave({ title: trimmed, energyLevel })
+    onSave({ title: trimmed, energyLevel }, { openEditor })
   }
 
-  const handleSubmitKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleSubmit()
-    } 
-  }
+  useKeyPress({ key: "Escape" }, onCancel)
+
+  useKeyPress({ key: "Enter" }, () => {
+    handleSubmit()
+  })
+
+  useKeyPress({ key: "Enter", shiftKey: true}, () => {
+    handleSubmit(true)
+  })
 
   return (
     <div className={styles.createTask}>
@@ -47,7 +48,6 @@ export default function CreateTaskInline({ onSave, onCancel }: Props) {
         ref={inputRef}
         value={title}
         onChange={e => setTitle(e.target.value)}
-        onKeyDown={handleSubmitKeyDown}
         placeholder="What needs to get done?"
         className={styles.createTaskInput}
       />
@@ -63,7 +63,7 @@ export default function CreateTaskInline({ onSave, onCancel }: Props) {
             </button>
           ))}
         </div>
-        <p className={`text-xs ${styles.timeText}`}>Enter to save · Esc to cancel</p>
+        <p className={`text-xs ${styles.timeText}`}>Enter to save · Esc to cancel · Shift + Enter to save and open</p>
       </div>
     </div>
   )

@@ -9,9 +9,9 @@ import type { EnergyLevel, TaskData } from "@/@types"
 import Row from "./Row"
 
 import { useTaskEditor } from "@/_hooks/useTaskEditor"
-import { useEscapeKey } from "@/_hooks/useEscapeKey"
 
 import { toDateInputValue, fromDateInputValue, energyOptions } from "./taskEdit.utils"
+import { useKeyPress } from "@/_hooks/useKeyPress"
 
 const energyColorClass: Record<EnergyLevel, string> = {
   deep: pageStyles.energyDeep,
@@ -28,7 +28,8 @@ type Props = {
 
 export default function TaskEditWindow({ task, projects, onClose, onMarkDone }: Props) {
   const [createdLabel, save, handleDelete, DraftState, CommitEdit] = useTaskEditor({task, onClose})
-  useEscapeKey(onClose);
+
+  useKeyPress({ key: "Escape" }, onClose)
 
   return createPortal(
     <>
