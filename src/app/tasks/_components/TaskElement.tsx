@@ -142,13 +142,13 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       )}
 
       {scheduleAnchor && (
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} className="hidden">
           <ScheduleModal task={task} anchor={scheduleAnchor} onClose={() => setScheduleAnchor(null)} />
         </div>
       )}
 
       {deleteAnchor && (
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} className="hidden">
           <DeleteModel task={task} anchor={deleteAnchor} onClose={() => setDeleteAnchor(null)} />
         </div>
       )}
