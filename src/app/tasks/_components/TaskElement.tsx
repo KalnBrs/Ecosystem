@@ -10,6 +10,8 @@ import ScheduleModal from "./ScheduleModal"
 import DeleteModel from "./DeleteModal"
 
 import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
+import { useUndoableValue } from "@/_hooks/useUndoableValue"
+import { useDeleteNode } from "@/queries/nodeQueries"
 import type { EnergyLevel, TaskData } from "@/@types"
 
 const energyLabels: Record<EnergyLevel, string> = {
@@ -34,11 +36,16 @@ type TaskElementProps = {
 
 export default function TaskElement({ task, projects, isSelected, onSelect, onClose }: TaskElementProps) {
   const [isChecked, toggleCheckedStatus, { isPendingUndo, undo }] = useTaskChecks(task.completed);
+  const { mutate: deleteNode } = useDeleteNode()
   const energy = task.energyLevel
 
   const [now] = useState(() => Date.now())
   const [scheduleAnchor, setScheduleAnchor] = useState<DOMRect | null>(null)
   const [deleteAnchor, setDeleteAnchor] = useState<DOMRect | null>(null)
+  const { isPending: isPendingDelete, schedule: scheduleDelete, undo: undoDelete } = useUndoableValue(
+    false,
+    pending => pending && deleteNode(task.id),
+  )
 
   const timeAgo = useMemo(() => {
     if (!task.updatedAt) return null
@@ -141,6 +148,17 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
         </div>
       )}
 
+      {isPendingDelete && (
+        <div onClick={e => e.stopPropagation()}>
+          <Toast
+            message="Task deleted"
+            actionLabel="Undo"
+            onAction={undoDelete}
+            durationMs={UNDO_WINDOW_MS}
+          />
+        </div>
+      )}
+
       {scheduleAnchor && (
         <div onClick={e => e.stopPropagation()} className="hidden">
           <ScheduleModal task={task} anchor={scheduleAnchor} onClose={() => setScheduleAnchor(null)} />
@@ -149,7 +167,11 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
 
       {deleteAnchor && (
         <div onClick={e => e.stopPropagation()} className="hidden">
-          <DeleteModel task={task} anchor={deleteAnchor} onClose={() => setDeleteAnchor(null)} />
+          <DeleteModel
+            anchor={deleteAnchor}
+            onClose={() => setDeleteAnchor(null)}
+            onConfirm={() => scheduleDelete(true)}
+          />
         </div>
       )}
 
