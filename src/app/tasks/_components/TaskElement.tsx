@@ -7,6 +7,7 @@ import styles from "../tasks.module.css"
 import Toast from "@/_components/Toast"
 import TaskEditWindow from "./TaskEditWindow"
 import ScheduleModal from "./ScheduleModal"
+import DeleteModel from "./DeleteModal"
 
 import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
 import type { EnergyLevel, TaskData } from "@/@types"
@@ -37,6 +38,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
 
   const [now] = useState(() => Date.now())
   const [scheduleAnchor, setScheduleAnchor] = useState<DOMRect | null>(null)
+  const [deleteAnchor, setDeleteAnchor] = useState<DOMRect | null>(null)
 
   const timeAgo = useMemo(() => {
     if (!task.updatedAt) return null
@@ -69,7 +71,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
 
   return (
     <div
-      className={`${styles.node} ${scheduleAnchor ? styles.nodeActive : ""} flex items-center gap-3 px-4 cursor-pointer m-1`}
+      className={`${styles.node} ${scheduleAnchor || deleteAnchor ? styles.nodeActive : ""} flex items-center gap-3 px-4 cursor-pointer m-1`}
       onClick={() => onSelect(task.id)}
     >
       <button
@@ -119,7 +121,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
           <Image src="/arrow-small-right.svg" alt="" width={15} height={15} style={{ filter: "brightness(0) invert(1)" }} />
         </button>
 
-        <button>
+        <button onClick={e => setDeleteAnchor(e.currentTarget.getBoundingClientRect())} aria-label="Open Delete">
           <Image src="/menu-dots.svg" alt="More options" width={12} height={12} className="changeIconColor" />
         </button>
       </div>
@@ -142,6 +144,12 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       {scheduleAnchor && (
         <div onClick={e => e.stopPropagation()}>
           <ScheduleModal task={task} anchor={scheduleAnchor} onClose={() => setScheduleAnchor(null)} />
+        </div>
+      )}
+
+      {deleteAnchor && (
+        <div onClick={e => e.stopPropagation()}>
+          <DeleteModel task={task} anchor={deleteAnchor} onClose={() => setDeleteAnchor(null)} />
         </div>
       )}
 
