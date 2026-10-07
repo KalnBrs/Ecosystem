@@ -37,15 +37,17 @@ type TaskElementProps = {
 export default function TaskElement({ task, projects, isSelected, onSelect, onClose }: TaskElementProps) {
   const [isChecked, toggleCheckedStatus, { isPendingUndo, undo }] = useTaskChecks(task.completed);
   const { mutate: deleteNode } = useDeleteNode()
+  const { isPending: isPendingDelete, schedule: scheduleDelete, undo: undoDelete } = useUndoableValue(
+    false,
+    pending => pending && deleteNode(task.id),
+  )
+  
   const energy = task.energyLevel
 
   const [now] = useState(() => Date.now())
   const [scheduleAnchor, setScheduleAnchor] = useState<DOMRect | null>(null)
   const [deleteAnchor, setDeleteAnchor] = useState<DOMRect | null>(null)
-  const { isPending: isPendingDelete, schedule: scheduleDelete, undo: undoDelete } = useUndoableValue(
-    false,
-    pending => pending && deleteNode(task.id),
-  )
+  
 
   const timeAgo = useMemo(() => {
     if (!task.updatedAt) return null
