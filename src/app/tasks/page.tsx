@@ -8,8 +8,7 @@ import TaskElement from "./_components/TaskElement"
 import CreateTaskInline, { CreateTaskDraft } from "./_components/CreateTaskInline"
 import { useCreateNode, useNodes } from "@/queries/nodeQueries"
 
-import type { Task } from "@/lib/models"
-import { toTaskData, EnergyFilter } from "./tasks.util"
+import { toTaskData, selectActiveTasks, filterTasks, EnergyFilter } from "./tasks.util"
 
 const energyFilters: EnergyFilter[] = ["all", "deep", "light", "quick"]
 
@@ -22,14 +21,7 @@ export default function Home() {
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
-  const tasks = useMemo(
-    () =>
-      allNodes.filter(
-        (node): node is Task =>
-          node.type === "task" && node.status === "active" && !node.completed
-      ),
-    [allNodes]
-  )
+  const tasks = useMemo(() => selectActiveTasks(allNodes), [allNodes])
 
   const handleCreateTask = (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => {
     createNode({
@@ -67,13 +59,10 @@ export default function Home() {
     return Array.from(ids)
   }, [tasks])
 
-  const filteredTasks = useMemo(() => {
-    return tasks.filter(task => {
-      if (energyFilter !== "all" && task.energyLevel !== energyFilter) return false
-      if (projectFilter && task.projectId !== projectFilter) return false
-      return true
-    })
-  }, [tasks, energyFilter, projectFilter])
+  const filteredTasks = useMemo(
+    () => filterTasks(tasks, energyFilter, projectFilter),
+    [tasks, energyFilter, projectFilter]
+  )
 
   return (
     <div className="flex flex-col mx-24 my-10 gap-3 flex-1 min-h-0">
