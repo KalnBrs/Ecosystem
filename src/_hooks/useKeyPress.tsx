@@ -21,12 +21,13 @@ type KeyCombo = {
 export function useKeyPress(targetConfig: KeyCombo, callback: () => void) {
   useEffect(() => {
     const {key, metaKey = false, ctrlKey = false, shiftKey = false, altKey = false} = targetConfig
+    
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const matchKey = event.key.toLowerCase() == key.toLowerCase()
 
       // If a modifier is explicitly expected, enforce it
-      if (event.metaKey !== metaKey || event.ctrlKey !== ctrlKey || event.shiftKey !== shiftKey || event.shiftKey !== altKey) return
+      if (event.metaKey !== metaKey || event.ctrlKey !== ctrlKey || event.shiftKey !== shiftKey || event.altKey !== altKey) return
       if (metaKey && !event.metaKey) return
       if (ctrlKey && !event.ctrlKey) return
       if (shiftKey && !event.shiftKey) return
