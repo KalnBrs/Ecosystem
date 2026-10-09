@@ -37,6 +37,7 @@ type TaskElementProps = {
 export default function TaskElement({ task, projects, isSelected, onSelect, onClose }: TaskElementProps) {
   const [isChecked, toggleCheckedStatus, { isPendingUndo, undo }] = useTaskChecks(task.completed);
   const { mutate: deleteNode } = useDeleteNode()
+  
   const { isPending: isPendingDelete, schedule: scheduleDelete, undo: undoDelete } = useUndoableValue(
     false,
     pending => pending && deleteNode(task.id),
@@ -184,6 +185,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
             projects={projects}
             onClose={onClose}
             onMarkDone={() => !isChecked && toggleCheckedStatus(task)}
+            onDelete={() => scheduleDelete(true)}
           />
         </div>
       )}

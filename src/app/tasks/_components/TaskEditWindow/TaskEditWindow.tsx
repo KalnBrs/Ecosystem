@@ -24,10 +24,11 @@ type Props = {
   projects: { id: string; title: string }[]
   onClose: () => void
   onMarkDone: () => void
+  onDelete: () => void
 }
 
-export default function TaskEditWindow({ task, projects, onClose, onMarkDone }: Props) {
-  const [createdLabel, save, handleDelete, DraftState, CommitEdit] = useTaskEditor({task, onClose})
+export default function TaskEditWindow({ task, projects, onClose, onMarkDone, onDelete }: Props) {
+  const [createdLabel, save, handleDelete, DraftState, CommitEdit] = useTaskEditor({ task, onClose, onDelete })
 
   useKeyPress({ key: "Escape" }, onClose)
 

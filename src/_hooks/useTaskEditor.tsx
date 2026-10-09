@@ -1,18 +1,18 @@
 import type { TaskData } from "@/@types";
 import { useMemo, useState } from "react";
-import { useUpdateNode, useDeleteNode } from "@/queries/nodeQueries";
+import { useUpdateNode } from "@/queries/nodeQueries";
 import { UpdateNodeInput } from "@/lib/schemas/node.schema";
 
 type Props = {
   task: TaskData;
   onClose: () => void;
+  onDelete: () => void;
 }
 
 type TaskUpdate = Extract<UpdateNodeInput, { type: "task" }>
 
-export function useTaskEditor({task, onClose} : Props) {
+export function useTaskEditor({task, onClose, onDelete} : Props) {
   const { mutate: updateNode } = useUpdateNode()
-  const { mutate: deleteNode } = useDeleteNode()
   
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description)
@@ -25,7 +25,7 @@ export function useTaskEditor({task, onClose} : Props) {
   }
 
   const handleDelete = () => {
-    deleteNode(task.id)
+    onDelete()
     onClose()
   }
 
