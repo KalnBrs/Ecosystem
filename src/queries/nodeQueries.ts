@@ -51,9 +51,8 @@ export function useCreateNode() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateNodeInput) => submitCreateNode(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: nodeKeys.lists() });
-    },
+    // Returned so the mutation stays pending until the refetched list contains the new node.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: nodeKeys.lists() }),
   });
 }
 

@@ -20,10 +20,12 @@ export default function Home() {
   const [projectFilter, setProjectFilter] = useState<string | null>(null)
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
+  const [pendingCreateCount, setPendingCreateCount] = useState(0)
 
   const tasks = useMemo(() => selectActiveTasks(allNodes), [allNodes])
 
   const handleCreateTask = (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => {
+    setPendingCreateCount(count => count + 1)
     createNode({
       type: "task",
       title: draft.title,
@@ -31,7 +33,10 @@ export default function Home() {
       tags: [],
       description: "",
       data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
-    }, { onSuccess: node => options?.openEditor && setSelectedTaskId(node.id) })
+    }, {
+      onSuccess: node => options?.openEditor && setSelectedTaskId(node.id),
+      onSettled: () => setPendingCreateCount(count => count - 1),
+    })
     setIsCreatingTask(false)
   }
 
@@ -103,6 +108,17 @@ export default function Home() {
       )}
 
       <div className={`${styles.taskListScroll} flex flex-col flex-1 min-h-0`}>
+        {pendingCreateCount > 0 && (
+          <div className="flex flex-col gap-2" data-testid="pending-creates">
+            <p className={`text-xs ${styles.timeText}`}>
+              Creating {pendingCreateCount} {pendingCreateCount === 1 ? "task" : "tasks"}…
+            </p>
+            {Array.from({ length: pendingCreateCount }, (_, i) => (
+              <div key={i} className={styles.skeletonRow} />
+            ))}
+          </div>
+        )}
+        
         {isLoading ? (
           <div className="flex flex-col gap-2">
             {[0, 1, 2].map(i => (
@@ -122,9 +138,9 @@ export default function Home() {
               onClose={() => setSelectedTaskId(null)}
             />
           ))
-        ) : (
+        ) : pendingCreateCount === 0 ? (
           <p className={`text-sm ${styles.timeText}`}>No tasks</p>
-        )}
+        ) : null}
 
         {isCreatingTask ? (
           <CreateTaskInline onSave={handleCreateTask} onCancel={() => setIsCreatingTask(false)} />

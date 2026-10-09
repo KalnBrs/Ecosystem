@@ -6,7 +6,7 @@
  */
 
 import * as React from "react";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, act } from "@testing-library/react";
 import Home from "@/app/tasks/page";
 import { useNodes, useCreateNode } from "@/queries/nodeQueries";
 import { Task, Project } from "@/lib/models";
@@ -19,9 +19,16 @@ jest.mock("@/app/tasks/_components/TaskElement", () => ({
   default: ({ task }: { task: { id: string; title: string } }) =>
     React.createElement("div", { "data-testid": "task" }, task.title),
 }));
+// Prefixed with `mock` so jest.mock factories may reference it.
+let mockCapturedOnSave: ((draft: { title: string; energyLevel: string }) => void) | undefined;
+const capturedOnSave = (draft: { title: string; energyLevel: string }) => mockCapturedOnSave?.(draft);
+
 jest.mock("@/app/tasks/_components/CreateTaskInline", () => ({
   __esModule: true,
-  default: () => React.createElement("div", { "data-testid": "create-inline" }),
+  default: ({ onSave }: { onSave: typeof mockCapturedOnSave }) => {
+    mockCapturedOnSave = onSave;
+    return React.createElement("div", { "data-testid": "create-inline" });
+  },
 }));
 
 const mockUseNodes = useNodes as jest.MockedFunction<typeof useNodes>;
@@ -130,6 +137,29 @@ describe("Task List page", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "All projects" }));
     expect(taskTitles()).toEqual(["In project", "Loose"]);
+  });
+
+  it("shows a skeleton with the pending count while tasks are being created", () => {
+    let settle: (() => void) | undefined;
+    const mutate = jest.fn((_input, options) => {
+      settle = () => options.onSettled();
+    });
+    mockUseCreateNode.mockReturnValue({ mutate } as unknown as ReturnType<typeof useCreateNode>);
+    mockNodes({ data: [] });
+    render(React.createElement(Home));
+
+    expect(screen.queryByTestId("pending-creates")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /Add task/ }));
+    act(() => capturedOnSave({ title: "One", energyLevel: "light" }));
+    expect(screen.getByText("Creating 1 task…")).toBeTruthy();
+    expect(screen.queryByText("No tasks")).toBeNull();
+
+    act(() => capturedOnSave({ title: "Two", energyLevel: "deep" }));
+    expect(screen.getByText("Creating 2 tasks…")).toBeTruthy();
+
+    act(() => settle?.());
+    expect(screen.getByText("Creating 1 task…")).toBeTruthy();
   });
 
   it("opens the inline create form when 'Add task' is clicked", () => {
