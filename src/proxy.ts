@@ -21,23 +21,28 @@ export async function proxy(request: NextRequest) {
       request.headers.get("x-real-ip") ??
       "127.0.0.1";
     
-    // 4. Check the rate limit
-    const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+    // 4. Check the rate limit — fail open if the Redis backend is unreachable
+    // so an Upstash outage/misconfig doesn't 500 every API route.
+    try {
+      const { success, limit, reset, remaining } = await ratelimit.limit(ip);
 
-    // 5. Block the request if limit is exceeded
-    if (!success) {
-      return new NextResponse(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
-        {
-          status: 429,
-          headers: {
-            "Content-Type": "application/json",
-            "X-RateLimit-Limit": limit.toString(),
-            "X-RateLimit-Remaining": remaining.toString(),
-            "X-RateLimit-Reset": reset.toString(),
-          },
-        }
-      );
+      // 5. Block the request if limit is exceeded
+      if (!success) {
+        return new NextResponse(
+          JSON.stringify({ error: "Too many requests. Please try again later." }),
+          {
+            status: 429,
+            headers: {
+              "Content-Type": "application/json",
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Rate limiter unavailable, allowing request through:", err);
     }
   }
 

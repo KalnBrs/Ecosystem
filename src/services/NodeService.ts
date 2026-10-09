@@ -47,9 +47,9 @@ function hydrateNode(row: PrismaNodeRow): Node {
         data.energyLevel as "deep" | "light" | "quick" | undefined,
         Boolean(data.isMorningPick),
         data.lastTouchedAt != null ? new Date(data.lastTouchedAt as string) : undefined,
-        data.estimatedDuration as number | undefined,
+        (data.estimatedDuration ?? undefined) as number | undefined,
         data.actualDuration as number | undefined,
-        data.projectId as string | undefined,
+        (data.projectId ?? undefined) as string | undefined,
         data.splitFromTaskId as string | undefined,
       );
     case "event":

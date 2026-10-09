@@ -3,7 +3,7 @@ import { Node, NodeType } from "@/lib/models"
 
 export type LinkResult = { outgoingIds: string[]; incomingIds: string[] };
 
-export async function listNodes(type?: NodeType): Promise<Node[]> {
+export async function submitListNodes(type?: NodeType): Promise<Node[]> {
   const url = type ? `/api/nodes?type=${type}` : "/api/nodes";
   const res = await fetch(url);
 
@@ -16,7 +16,7 @@ export async function listNodes(type?: NodeType): Promise<Node[]> {
   return data;
 }
 
-export async function getNodeById(id: string): Promise<Node> {
+export async function submitGetNodeById(id: string): Promise<Node> {
   const res = await fetch(`/api/nodes/${id}`);
 
   if (!res.ok) {
@@ -28,7 +28,7 @@ export async function getNodeById(id: string): Promise<Node> {
   return data;
 }
 
-export async function createNode(data: CreateNodeInput): Promise<Node> {
+export async function submitCreateNode(data: CreateNodeInput): Promise<Node> {
   const res = await fetch("/api/nodes", {
     method: "POST",
     headers: {
@@ -46,7 +46,7 @@ export async function createNode(data: CreateNodeInput): Promise<Node> {
   return node;
 }
 
-export async function updateNodeById(id: string, data: UpdateNodeInput): Promise<Node> {
+export async function submitUpdateNodeById(id: string, data: UpdateNodeInput): Promise<Node> {
   const res = await fetch(`/api/nodes/${id}`, {
     method: "PATCH",
     headers: {
@@ -64,7 +64,7 @@ export async function updateNodeById(id: string, data: UpdateNodeInput): Promise
   return node;
 }
 
-export async function deleteNodeById(id: string): Promise<void> {
+export async function submitDeleteNodeById(id: string): Promise<void> {
   const res = await fetch(`/api/nodes/${id}`, {
     method: "DELETE",
   });
@@ -76,7 +76,7 @@ export async function deleteNodeById(id: string): Promise<void> {
   // 204 No Content — no body to parse
 }
 
-export async function createLink(id: string, targetNodeId: string): Promise<LinkResult> {
+export async function submitCreateLink(id: string, targetNodeId: string): Promise<LinkResult> {
   const res = await fetch(`/api/nodes/${id}/links`, {
     method: "POST",
     headers: {
@@ -94,7 +94,7 @@ export async function createLink(id: string, targetNodeId: string): Promise<Link
   return data;
 }
 
-export async function deleteLink(id: string, targetNodeId: string): Promise<LinkResult> {
+export async function submitDeleteLink(id: string, targetNodeId: string): Promise<LinkResult> {
   const res = await fetch(`/api/nodes/${id}/links`, {
     method: "DELETE",
     headers: {
