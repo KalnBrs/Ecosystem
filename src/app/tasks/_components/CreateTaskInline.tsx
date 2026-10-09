@@ -48,6 +48,7 @@ export default function CreateTaskInline({ onSave, onCancel }: Props) {
         ref={inputRef}
         value={title}
         onChange={e => setTitle(e.target.value)}
+        maxLength={255}
         placeholder="What needs to get done?"
         className={styles.createTaskInput}
       />
