@@ -15,9 +15,16 @@
 }
 
 .node {
+  position: relative;
   height: 4rem;
   flex-shrink: 0;
   transition: box-shadow 0.15s ease, background-color 0.15s ease, border-radius 0.15s ease;
+}
+
+.toastContainer {
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 
 .skeletonRow {

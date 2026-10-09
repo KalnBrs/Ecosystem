@@ -141,7 +141,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       )}
 
       {isPendingUndo && (
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} className={styles.toastContainer}>
           <Toast
             message={isChecked ? "Task marked complete" : "Task marked incomplete"}
             actionLabel="Undo"
@@ -152,7 +152,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       )}
 
       {isPendingDelete && (
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} className={styles.toastContainer}>
           <Toast
             message="Task deleted"
             actionLabel="Undo"
@@ -179,7 +179,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       )}
 
       {isSelected && (
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} className="hidden">
           <TaskEditWindow
             task={task}
             projects={projects}
