@@ -73,7 +73,7 @@ export default function LoginForm() {
         <AuthField label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required autoFocus />
         <AuthField label="Password" name="password" type="password" autoComplete="current-password" placeholder="Your password" required />
         {process.env.NODE_ENV !== "production" && (
-          <Link href="/recover-password" className="-mt-2 self-end text-xs text-accent hover:text-accent-hover">
+          <Link href={callbackUrl === "/tasks" ? "/recover-password" : `/recover-password?callbackUrl=${encodeURIComponent(callbackUrl)}`} className="-mt-2 self-end text-xs text-accent hover:text-accent-hover">
             Forgot password?
           </Link>
         )}
