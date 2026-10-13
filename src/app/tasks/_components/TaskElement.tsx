@@ -94,28 +94,37 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
         className={`${styles.checkbox} ${isChecked ? styles.checkboxChecked : ""} shrink-0`}
       />
 
-      <div className="flex-1">
-        <p className={`text-md ${isChecked ? "line-through opacity-50" : ""}`}>{task.title}</p>
-        <div className="flex flex-row items-center gap-2">
-          {timeAgo && <p className={`text-xs ${styles.timeText}`}>{timeAgo}</p>}
+      <button
+        type="button"
+        aria-label={`Edit task: ${task.title}`}
+        aria-expanded={isSelected}
+        onClick={e => {
+          e.stopPropagation()
+          onSelect(task.id)
+        }}
+        className={`${styles.editTrigger} flex-1 text-left cursor-pointer`}
+      >
+        <span className={`block text-md ${isChecked ? "line-through opacity-50" : ""}`}>{task.title}</span>
+        <span className="flex flex-row items-center gap-2">
+          {timeAgo && <span className={`text-xs ${styles.timeText}`}>{timeAgo}</span>}
           {task.projectId && (
-            <p className={`text-xs leading-none ${styles.timeText} flex flex-row items-center`}>
+            <span className={`text-xs leading-none ${styles.timeText} flex flex-row items-center`}>
               <Image aria-hidden src="/folder.svg" alt="" width={10} height={10} className="changeIconColorStatic mr-1 shrink-0" />
               {task.projectId}
-            </p>
+            </span>
           )}
           {dueLabel && (
-            <div className={`text-xs leading-none ${styles.timeText} ${dueClass} flex flex-row items-center`}>
+            <span className={`text-xs leading-none ${styles.timeText} ${dueClass} flex flex-row items-center`}>
               <span
                 aria-hidden
                 className={`${styles.maskIcon} mr-1`}
                 style={{ maskImage: "url(/calendar-minus.svg)", WebkitMaskImage: "url(/calendar-minus.svg)" }}
               />
-              <p className="pt-px"> Due {dueLabel}</p>
-            </div>
+              <span className="pt-px"> Due {dueLabel}</span>
+            </span>
           )}
-        </div>
-      </div>
+        </span>
+      </button>
 
       <div className={`${styles.actions} flex flex-row gap-4 px-1 `} onClick={e => e.stopPropagation()}>
         <button

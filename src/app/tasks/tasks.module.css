@@ -43,10 +43,27 @@
 }
 
 .node:hover .actions,
+.node:focus-within .actions,
 .nodeActive .actions {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+}
+
+.editTrigger {
+  align-self: stretch;
+  min-width: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.editTrigger:focus-visible {
+  outline: 2px solid var(--border);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
 }
 
 .node:hover,
