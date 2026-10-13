@@ -59,7 +59,7 @@ describe("POST /api/auth/users", () => {
       signUpMock.mockResolvedValue(CREATED_USER);
 
       const response = await POST(
-        makeRequest({ name: "alice", email: "alice@example.com", password: "secret123" }),
+        makeRequest({ name: "alice", email: "alice@example.com", password: "Secret#12345" }),
       );
       const body = await response.json();
 
@@ -76,7 +76,7 @@ describe("POST /api/auth/users", () => {
   describe("with an invalid email address", () => {
     it("responds 400", async () => {
       const response = await POST(
-        makeRequest({ name: "alice", email: "not-an-email", password: "secret123" }),
+        makeRequest({ name: "alice", email: "not-an-email", password: "Secret#12345" }),
       );
 
       expect(response.status).toBe(400);
@@ -84,10 +84,17 @@ describe("POST /api/auth/users", () => {
     });
   });
 
-  describe("with a password that is too short (< 6 characters)", () => {
-    it("responds 400", async () => {
+  describe("with a password that does not meet the strength requirements", () => {
+    it.each([
+      ["too short", "Ab1!"],
+      ["no uppercase letter", "secret#12345"],
+      ["no lowercase letter", "SECRET#12345"],
+      ["no number", "Secret#abcdef"],
+      ["no symbol", "Secret123456"],
+      ["contains whitespace", "Secret #12345"],
+    ])("responds 400 when the password has %s", async (_label, password) => {
       const response = await POST(
-        makeRequest({ name: "alice", email: "alice@example.com", password: "abc" }),
+        makeRequest({ name: "alice", email: "alice@example.com", password }),
       );
 
       expect(response.status).toBe(400);
@@ -98,7 +105,7 @@ describe("POST /api/auth/users", () => {
   describe("with a name that is too short (< 4 characters)", () => {
     it("responds 400", async () => {
       const response = await POST(
-        makeRequest({ name: "ali", email: "alice@example.com", password: "secret123" }),
+        makeRequest({ name: "ali", email: "alice@example.com", password: "Secret#12345" }),
       );
 
       expect(response.status).toBe(400);
@@ -109,7 +116,7 @@ describe("POST /api/auth/users", () => {
   describe("with missing required fields", () => {
     it("responds 400 when name is absent", async () => {
       const response = await POST(
-        makeRequest({ email: "alice@example.com", password: "secret123" }),
+        makeRequest({ email: "alice@example.com", password: "Secret#12345" }),
       );
 
       expect(response.status).toBe(400);
@@ -117,7 +124,7 @@ describe("POST /api/auth/users", () => {
 
     it("responds 400 when email is absent", async () => {
       const response = await POST(
-        makeRequest({ name: "alice", password: "secret123" }),
+        makeRequest({ name: "alice", password: "Secret#12345" }),
       );
 
       expect(response.status).toBe(400);
@@ -129,7 +136,7 @@ describe("POST /api/auth/users", () => {
       signUpMock.mockResolvedValue(null);
 
       const response = await POST(
-        makeRequest({ name: "alice", email: "alice@example.com", password: "secret123" }),
+        makeRequest({ name: "alice", email: "alice@example.com", password: "Secret#12345" }),
       );
       const body = await response.json();
 
@@ -143,7 +150,7 @@ describe("POST /api/auth/users", () => {
       signUpMock.mockRejectedValue(new Error("database unreachable"));
 
       const response = await POST(
-        makeRequest({ name: "alice", email: "alice@example.com", password: "secret123" }),
+        makeRequest({ name: "alice", email: "alice@example.com", password: "Secret#12345" }),
       );
 
       expect(response.status).toBe(500);

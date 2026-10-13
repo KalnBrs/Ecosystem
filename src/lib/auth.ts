@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
        * @returns An object containing the user's `id` and `email` on success,
        *   or `null` if validation fails.
        */
-      async authorize(credentials): Promise<{ id: string; email: string; image: string | null } | null> {
+      async authorize(credentials): Promise<{ id: string; email: string; name: string; image: string | null } | null> {
         const parsed = z
           .object({ email: z.email(), password: z.string().min(6) })
           .safeParse(credentials);
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         const passwordsMatch = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!passwordsMatch) return null;
 
-        return { id: user.id, email: user.email, image: user.image };
+        return { id: user.id, email: user.email, name: user.name ?? "", image: user.image };
       },
     }),
   ],
@@ -41,6 +41,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.email = user.email;
+        token.name = user.name;
         token.id = user.id;
         token.image = (user as { image: string | null }).image ?? null;
       }
@@ -50,6 +51,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.email = (token.email as string) || "";
+        session.user.name = (token.name as string) || "";
         session.user.id = (token.id as string) || "";
         session.user.image = (token.image as string | null) ?? null;
       }

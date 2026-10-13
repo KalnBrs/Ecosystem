@@ -47,3 +47,13 @@ async function signUp(user: UserPayload): Promise<User | null> {
 }
 
 export default signUp;
+
+/**
+ * Replaces the stored password hash for the account with the given email.
+ *
+ * @returns `true` if an account was updated, `false` if no account has that email.
+ */
+export async function resetPassword(email: string, passwordHash: string): Promise<boolean> {
+  const result = await prisma.user.updateMany({ where: { email }, data: { passwordHash } });
+  return result.count > 0;
+}

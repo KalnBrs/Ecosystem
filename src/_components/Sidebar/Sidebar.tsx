@@ -5,7 +5,7 @@ import styles from "./Sidebar.module.css"
 import Image from "next/image"
 import Link from "next/link"
 import ThemeToggle from "./ThemeToggle"
-import { useSession } from "next-auth/react"
+import ProfileMenu from "./ProfileMenu"
 
 const tabs = [
   { href: "/inbox",        label: "Inbox",        icon: "/inbox-full.svg" },
@@ -18,7 +18,6 @@ const tabs = [
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const { data: session } = useSession()
 
   return (
     <div className={`${styles.sidebar} w-auto h-full border-r-2 shrink-0`}>
@@ -51,10 +50,7 @@ export default function Sidebar() {
             </div>
 
             <div className="flex flex-row justify-between items-center w-full gap-2 border-t-2 pt-3 pb-3 px-2">
-              <div className="rounded-full bg-zinc-200 dark:bg-zinc-700 p-0.5 shadow-sm">
-                <Image src={session?.user.image ?? "/default-avatar.svg"} alt="Profile picture" width={30} height={30} className="rounded-full object-cover" />
-              </div>
-              <p className="text-sm w-25 text-left">{session?.user.name ? session?.user.name : "name"}</p>
+              <ProfileMenu />
               <ThemeToggle />
               <Image src={"/settings.svg"} alt="" width={20} height={20} className="changeIconColor" />
             </div>

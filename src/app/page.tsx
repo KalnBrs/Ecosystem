@@ -1,9 +1,5 @@
+import { redirect } from "next/navigation"
+
 export default function Home() {
-  return (
-    <div>
-      <div className="flex ">
-        hello
-      </div>
-    </div>
-  );
+  redirect("/tasks")
 }
