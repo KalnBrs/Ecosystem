@@ -87,6 +87,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       <button
         role="checkbox"
         aria-checked={isChecked}
+        aria-label={isChecked ? `Mark ${task.title} incomplete` : `Mark ${task.title} complete`}
         onClick={e => {
           e.stopPropagation()
           toggleCheckedStatus(task)
@@ -110,7 +111,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
           {task.projectId && (
             <span className={`text-xs leading-none ${styles.timeText} flex flex-row items-center`}>
               <Image aria-hidden src="/folder.svg" alt="" width={10} height={10} className="changeIconColorStatic mr-1 shrink-0" />
-              {task.projectId}
+              {projects.find(project => project.id === task.projectId)?.title ?? task.projectId}
             </span>
           )}
           {dueLabel && (
@@ -135,10 +136,10 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
           <Image src="/calendar-minus.svg" alt="Calendar" width={15} height={15} className="changeIconColor" />
         </button>
 
-        <button className={styles.startButton}>
+        {/* <button className={styles.startButton}> Hidden until the focus feature is added
           Start
           <Image src="/arrow-small-right.svg" alt="" width={15} height={15} style={{ filter: "brightness(0) invert(1)" }} />
-        </button>
+        </button> */}
 
         <button onClick={e => setDeleteAnchor(e.currentTarget.getBoundingClientRect())} aria-label="Open Delete">
           <Image src="/menu-dots.svg" alt="More options" width={12} height={12} className="changeIconColor" />

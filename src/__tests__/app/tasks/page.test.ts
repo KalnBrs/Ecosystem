@@ -25,9 +25,9 @@ const capturedOnSave = (draft: { title: string; energyLevel: string }) => mockCa
 
 jest.mock("@/app/tasks/_components/CreateTaskInline", () => ({
   __esModule: true,
-  default: ({ onSave }: { onSave: typeof mockCapturedOnSave }) => {
+  default: ({ onSave, initialDraft }: { onSave: typeof mockCapturedOnSave; initialDraft?: { title: string } }) => {
     mockCapturedOnSave = onSave;
-    return React.createElement("div", { "data-testid": "create-inline" });
+    return React.createElement("div", { "data-testid": "create-inline" }, initialDraft?.title);
   },
 }));
 
@@ -160,6 +160,22 @@ describe("Task List page", () => {
 
     act(() => settle?.());
     expect(screen.getByText("Creating 1 task…")).toBeTruthy();
+  });
+
+  it("reopens the form with the draft and shows the error when creation fails", () => {
+    const mutate = jest.fn((_input, options) => {
+      options.onError(new Error("Network down"));
+      options.onSettled();
+    });
+    mockUseCreateNode.mockReturnValue({ mutate } as unknown as ReturnType<typeof useCreateNode>);
+    mockNodes({ data: [] });
+    render(React.createElement(Home));
+
+    fireEvent.click(screen.getByRole("button", { name: /Add task/ }));
+    act(() => capturedOnSave({ title: "Lost task", energyLevel: "deep" }));
+
+    expect(screen.getByRole("alert").textContent).toContain("Network down");
+    expect(screen.getByTestId("create-inline").textContent).toBe("Lost task");
   });
 
   it("opens the inline create form when 'Add task' is clicked", () => {

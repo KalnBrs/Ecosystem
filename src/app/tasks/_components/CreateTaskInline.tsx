@@ -8,6 +8,7 @@ import { useKeyPress } from "@/_hooks/useKeyPress"
 type Props = {
   onSave: (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => void,
   onCancel: () => void
+  initialDraft?: CreateTaskDraft
 }
 
 const energyOptions: EnergyLevel[] = ["deep", "light", "quick"]
@@ -17,9 +18,9 @@ export type CreateTaskDraft = {
   energyLevel: EnergyLevel
 }
 
-export default function CreateTaskInline({ onSave, onCancel }: Props) {
-  const [title, setTitle] = useState("")
-  const [energyLevel, setEnergyLevel] = useState<EnergyLevel>("light")
+export default function CreateTaskInline({ onSave, onCancel, initialDraft }: Props) {
+  const [title, setTitle] = useState(initialDraft?.title ?? "")
+  const [energyLevel, setEnergyLevel] = useState<EnergyLevel>(initialDraft?.energyLevel ?? "light")
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

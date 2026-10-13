@@ -21,10 +21,12 @@ export default function Home() {
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [pendingCreateCount, setPendingCreateCount] = useState(0)
+  const [createFailure, setCreateFailure] = useState<{ draft: CreateTaskDraft; message: string; id: number } | null>(null)
 
   const tasks = useMemo(() => selectActiveTasks(allNodes), [allNodes])
 
   const handleCreateTask = (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => {
+    setCreateFailure(null)
     setPendingCreateCount(count => count + 1)
     createNode({
       type: "task",
@@ -34,7 +36,21 @@ export default function Home() {
       description: "",
       data: { completed: false, energyLevel: draft.energyLevel, isMorningPick: false, actualDuration: 0 },
     }, {
-      onSuccess: node => options?.openEditor && setSelectedTaskId(node.id),
+      onSuccess: node => {
+        if (options?.openEditor) {
+          setEnergyFilter("all")
+          setProjectFilter(null)
+          setSelectedTaskId(node.id)
+        }
+      },
+      onError: err => {
+        setCreateFailure({
+          draft,
+          message: err instanceof Error ? err.message : "Failed to create task",
+          id: Date.now(),
+        })
+        setIsCreatingTask(true)
+      },
       onSettled: () => setPendingCreateCount(count => count - 1),
     })
     setIsCreatingTask(false)
@@ -142,10 +158,24 @@ export default function Home() {
           <p className={`text-sm ${styles.timeText}`}>No tasks</p>
         ) : null}
 
+        {createFailure && (
+          <p role="alert" className={`text-xs ${styles.createError}`}>
+            {`Couldn't create "{createFailure.draft.title}": {createFailure.message}`}
+          </p>
+        )}
+
         {isCreatingTask ? (
-          <CreateTaskInline onSave={handleCreateTask} onCancel={() => setIsCreatingTask(false)} />
+          <CreateTaskInline
+            key={createFailure?.id ?? "new"}
+            initialDraft={createFailure?.draft}
+            onSave={handleCreateTask}
+            onCancel={() => {
+              setCreateFailure(null)
+              setIsCreatingTask(false)
+            }}
+          />
         ) : (
-          <button className={styles.addTask} onClick={() => setIsCreatingTask(true)}>
+          <button className={styles.addTask} onClick={() => { setCreateFailure(null); setIsCreatingTask(true) }}>
             <span className={styles.plusIcon}>+</span>
             Add task
           </button>
