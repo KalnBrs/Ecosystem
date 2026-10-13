@@ -27,18 +27,10 @@
   background-color: var(--muted);
 }
 
-.changeIconColor {
-  filter: var(--icon-default);
-}
-
-.tab:hover .changeIconColor {
+.tab:hover :global(.changeIconColor) {
   filter: var(--icon-hover);
 }
 
-.selected .changeIconColor {
-  filter: var(--icon-hover);
-}
-
-.changeIconColor:hover {
+.selected :global(.changeIconColor) {
   filter: var(--icon-hover);
 }

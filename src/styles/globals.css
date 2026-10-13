@@ -85,6 +85,7 @@
 
   --destructive: #ef4444;
   --success: #22c55e;
+  --warning: #eab308;
 
   --energy-deep: #3b82f6;
   --energy-light: #8e97a8;
@@ -127,6 +128,7 @@ html.light {
 
   --destructive: #c0392b;
   --success: #1f7a4a;
+  --warning: #b7791f;
 
   --energy-deep: #1f6b5e;
   --energy-light: #d99a1f;
@@ -163,4 +165,25 @@ html.light {
   button {
     cursor: pointer;
   }
+}
+
+.changeIconColor {
+  filter: var(--icon-default);
+}
+
+.changeIconColor:hover {
+  filter: var(--icon-hover);
+}
+
+.changeIconColorStatic {
+  filter: var(--icon-default);
+}
+
+.changeIconColorStatic:hover {
+  filter: var(--icon-default);
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
 }

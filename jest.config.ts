@@ -10,6 +10,7 @@ const config: Config = {
           module: "commonjs",
           moduleResolution: "node",
           esModuleInterop: true,
+          jsx: "react-jsx",
         },
       },
     ],

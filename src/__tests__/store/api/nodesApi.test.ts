@@ -6,18 +6,18 @@
  * error-propagation contracts are verified.
  *
  * Covered functions:
- *   listNodes, getNodeById, createNode, updateNodeById,
- *   deleteNodeById, createLink, deleteLink
+ *   submitListNodes, submitGetNodeById, submitCreateNode, submitUpdateNodeById,
+ *   submitDeleteNodeById, submitCreateLink, submitDeleteLink
  */
 
 import {
-  listNodes,
-  getNodeById,
-  createNode,
-  updateNodeById,
-  deleteNodeById,
-  createLink,
-  deleteLink,
+  submitListNodes,
+  submitGetNodeById,
+  submitCreateNode,
+  submitUpdateNodeById,
+  submitDeleteNodeById,
+  submitCreateLink,
+  submitDeleteLink,
 } from "@/store/api/nodesApi";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -34,12 +34,12 @@ function makeFetchMock(ok: boolean, body: unknown) {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe("listNodes", () => {
+describe("submitListNodes", () => {
   it("calls GET /api/nodes with no query string when type is omitted", async () => {
     const data = [{ id: NODE_ID, title: "My Task" }];
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await listNodes();
+    const result = await submitListNodes();
 
     expect(global.fetch).toHaveBeenCalledWith("/api/nodes");
     expect(result).toEqual(data);
@@ -49,7 +49,7 @@ describe("listNodes", () => {
     const data = [{ id: NODE_ID, title: "My Task", type: "task" }];
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await listNodes("task");
+    const result = await submitListNodes("task");
 
     expect(global.fetch).toHaveBeenCalledWith("/api/nodes?type=task");
     expect(result).toEqual(data);
@@ -58,28 +58,28 @@ describe("listNodes", () => {
   it("throws the server error message when the response is not ok (error key)", async () => {
     global.fetch = makeFetchMock(false, { error: "Unauthorized" });
 
-    await expect(listNodes()).rejects.toThrow("Unauthorized");
+    await expect(submitListNodes()).rejects.toThrow("Unauthorized");
   });
 
   it("throws the server error message when the response is not ok (message key)", async () => {
     global.fetch = makeFetchMock(false, { message: "Unauthorized" });
 
-    await expect(listNodes()).rejects.toThrow("Unauthorized");
+    await expect(submitListNodes()).rejects.toThrow("Unauthorized");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(listNodes()).rejects.toThrow("Something went wrong");
+    await expect(submitListNodes()).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("getNodeById", () => {
+describe("submitGetNodeById", () => {
   it("calls GET /api/nodes/:id and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, title: "My Task" };
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await getNodeById(NODE_ID);
+    const result = await submitGetNodeById(NODE_ID);
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}`);
     expect(result).toEqual(data);
@@ -88,24 +88,24 @@ describe("getNodeById", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Not found" });
 
-    await expect(getNodeById(NODE_ID)).rejects.toThrow("Not found");
+    await expect(submitGetNodeById(NODE_ID)).rejects.toThrow("Not found");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(getNodeById(NODE_ID)).rejects.toThrow("Something went wrong");
+    await expect(submitGetNodeById(NODE_ID)).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("createNode", () => {
+describe("submitCreateNode", () => {
   const payload = { title: "New Task", type: "task" };
 
   it("calls POST /api/nodes with JSON body and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, ...payload };
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await createNode(payload);
+    const result = await submitCreateNode(payload);
 
     expect(global.fetch).toHaveBeenCalledWith("/api/nodes", {
       method: "POST",
@@ -118,24 +118,24 @@ describe("createNode", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Validation failed" });
 
-    await expect(createNode(payload)).rejects.toThrow("Validation failed");
+    await expect(submitCreateNode(payload)).rejects.toThrow("Validation failed");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(createNode(payload)).rejects.toThrow("Something went wrong");
+    await expect(submitCreateNode(payload)).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("updateNodeById", () => {
+describe("submitUpdateNodeById", () => {
   const patch = { title: "Updated title" };
 
   it("calls PATCH /api/nodes/:id with JSON body and returns parsed JSON on success", async () => {
     const data = { id: NODE_ID, title: "Updated title" };
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await updateNodeById(NODE_ID, patch);
+    const result = await submitUpdateNodeById(NODE_ID, patch);
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}`, {
       method: "PATCH",
@@ -148,21 +148,21 @@ describe("updateNodeById", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Node not found" });
 
-    await expect(updateNodeById(NODE_ID, patch)).rejects.toThrow("Node not found");
+    await expect(submitUpdateNodeById(NODE_ID, patch)).rejects.toThrow("Node not found");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(updateNodeById(NODE_ID, patch)).rejects.toThrow("Something went wrong");
+    await expect(submitUpdateNodeById(NODE_ID, patch)).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("deleteNodeById", () => {
+describe("submitDeleteNodeById", () => {
   it("calls DELETE /api/nodes/:id and resolves as void on success", async () => {
     global.fetch = makeFetchMock(true, null);
 
-    await expect(deleteNodeById(NODE_ID)).resolves.toBeUndefined();
+    await expect(submitDeleteNodeById(NODE_ID)).resolves.toBeUndefined();
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}`, {
       method: "DELETE",
@@ -172,22 +172,22 @@ describe("deleteNodeById", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Node not found" });
 
-    await expect(deleteNodeById(NODE_ID)).rejects.toThrow("Node not found");
+    await expect(submitDeleteNodeById(NODE_ID)).rejects.toThrow("Node not found");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(deleteNodeById(NODE_ID)).rejects.toThrow("Something went wrong");
+    await expect(submitDeleteNodeById(NODE_ID)).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("createLink", () => {
+describe("submitCreateLink", () => {
   it("calls POST /api/nodes/:id/links with targetNodeId body and returns parsed JSON on success", async () => {
     const data = { outgoingIds: [TARGET_ID], incomingIds: [] };
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await createLink(NODE_ID, TARGET_ID);
+    const result = await submitCreateLink(NODE_ID, TARGET_ID);
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}/links`, {
       method: "POST",
@@ -200,22 +200,22 @@ describe("createLink", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Node not found" });
 
-    await expect(createLink(NODE_ID, TARGET_ID)).rejects.toThrow("Node not found");
+    await expect(submitCreateLink(NODE_ID, TARGET_ID)).rejects.toThrow("Node not found");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(createLink(NODE_ID, TARGET_ID)).rejects.toThrow("Something went wrong");
+    await expect(submitCreateLink(NODE_ID, TARGET_ID)).rejects.toThrow("Something went wrong");
   });
 });
 
-describe("deleteLink", () => {
+describe("submitDeleteLink", () => {
   it("calls DELETE /api/nodes/:id/links with targetNodeId body and returns parsed JSON on success", async () => {
     const data = { outgoingIds: [], incomingIds: [] };
     global.fetch = makeFetchMock(true, { data });
 
-    const result = await deleteLink(NODE_ID, TARGET_ID);
+    const result = await submitDeleteLink(NODE_ID, TARGET_ID);
 
     expect(global.fetch).toHaveBeenCalledWith(`/api/nodes/${NODE_ID}/links`, {
       method: "DELETE",
@@ -228,12 +228,12 @@ describe("deleteLink", () => {
   it("throws the server error message when the response is not ok", async () => {
     global.fetch = makeFetchMock(false, { error: "Node not found" });
 
-    await expect(deleteLink(NODE_ID, TARGET_ID)).rejects.toThrow("Node not found");
+    await expect(submitDeleteLink(NODE_ID, TARGET_ID)).rejects.toThrow("Node not found");
   });
 
   it("falls back to 'Something went wrong' when the error body has no message", async () => {
     global.fetch = makeFetchMock(false, {});
 
-    await expect(deleteLink(NODE_ID, TARGET_ID)).rejects.toThrow("Something went wrong");
+    await expect(submitDeleteLink(NODE_ID, TARGET_ID)).rejects.toThrow("Something went wrong");
   });
 });

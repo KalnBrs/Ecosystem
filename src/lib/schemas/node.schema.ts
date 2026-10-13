@@ -29,7 +29,12 @@ export const UpdateTaskSchema = z.object({
   type: z.literal("task"),
 }).merge(BaseNode.partial()).extend({
   tags: z.string().array().optional(),
-  data: TaskSchema.shape.data.partial().optional(),
+  // null clears the field; hydrateNode treats null as unset.
+  data: TaskSchema.shape.data.partial().extend({
+    dueDate: z.iso.datetime().nullable().optional(),
+    estimatedDuration: z.number().int().positive().nullable().optional(),
+    projectId: z.uuid().nullable().optional(),
+  }).optional(),
 });
 
 // ─── Event ──────────────────────────────────────────────────────────────────

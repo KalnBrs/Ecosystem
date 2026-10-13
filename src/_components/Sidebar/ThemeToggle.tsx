@@ -29,7 +29,7 @@ export default function ThemeToggle() {
         alt=""
         width={20}
         height={20}
-        className={`block ${styles.changeIconColor}`}
+        className={`block changeIconColor`}
       />
     </button>
   )
