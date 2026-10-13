@@ -81,8 +81,9 @@ export default function Home() {
   }, [tasks])
 
   const filteredTasks = useMemo(
-    () => filterTasks(tasks, energyFilter, projectFilter),
-    [tasks, energyFilter, projectFilter]
+    () => filterTasks(tasks, energyFilter, projectFilter && projectIds.includes(projectFilter) ? projectFilter : null),
+    [tasks, energyFilter, projectFilter, projectIds]
+
   )
 
   return (
