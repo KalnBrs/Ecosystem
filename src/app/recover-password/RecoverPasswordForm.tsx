@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 
-import { AuthAlert, AuthField, AuthLayout, AuthSubmitButton, PasswordChecklist } from "@/_components/Auth"
+import { AuthAlert, AuthField, AuthLayout, AuthSubmitButton, getSafeCallbackUrl, PasswordChecklist } from "@/_components/Auth"
 import { isStrongPassword } from "@/lib/passwordRules"
 
 type FieldErrors = Partial<Record<"email" | "password" | "confirmPassword", string>>
@@ -12,6 +12,8 @@ type FieldErrors = Partial<Record<"email" | "password" | "confirmPassword", stri
 export default function RecoverPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"))
+  const loginHref = callbackUrl === "/tasks" ? "/login" : `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [error, setError] = useState<string | null>(null)
@@ -53,8 +55,7 @@ export default function RecoverPasswordForm() {
       }
 
       const next = new URLSearchParams({ reset: "1" })
-      const callbackUrl = searchParams.get("callbackUrl")
-      if (callbackUrl) next.set("callbackUrl", callbackUrl)
+      if (callbackUrl !== "/tasks") next.set("callbackUrl", callbackUrl)
       router.replace(`/login?${next.toString()}`)
     } catch {
       setError("Something went wrong. Please try again.")
@@ -67,7 +68,7 @@ export default function RecoverPasswordForm() {
       title="Recover your password"
       subtitle="Enter your account email and choose a new password."
       footer={
-        <Link href="/login" className="font-medium text-accent hover:text-accent-hover">
+        <Link href={loginHref} className="font-medium text-accent hover:text-accent-hover">
           Back to log in
         </Link>
       }
