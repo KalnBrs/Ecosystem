@@ -95,6 +95,7 @@ export function useDeleteNode() {
     onError: (_error, _nodeId, context) => {
       context?.snapshot.forEach(([key, value]) => queryClient.setQueryData(key, value));
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: nodeKeys.lists() }),
     onSuccess: (_data, nodeId) => {
       queryClient.removeQueries({ queryKey: nodeKeys.detail(nodeId) });
       queryClient.invalidateQueries({ queryKey: nodeKeys.lists() });
