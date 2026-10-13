@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 
-import Sidebar from "@/_components/Sidebar";
+import AppShell from "@/_components/AppShell";
 import { Providers } from "./providers";
 
 const geistSans = Geist({
@@ -32,12 +32,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <div className="flex h-screen overflow-hidden">
-            <Sidebar />
-            <div className="flex-1 m-10 overflow-hidden flex flex-col">
-              {children}
-            </div>
-          </div>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

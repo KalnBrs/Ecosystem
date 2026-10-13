@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { User } from '@/generated/prisma';
 
 import signUp from '@/services/AuthService';
+import { isStrongPassword } from '@/lib/passwordRules';
 
 /**
  * POST /api/auth/users
@@ -21,7 +22,7 @@ import signUp from '@/services/AuthService';
 export async function POST(request: Request) {
   try {
     const parsed = z
-      .object({ email: z.email(), password: z.string().min(6).max(255), name: z.string().min(4).max(255) })
+      .object({ email: z.email(), password: z.string().refine(isStrongPassword), name: z.string().min(4).max(255) })
       .safeParse(await request.json())
     if (!parsed.success) {
       return NextResponse.json({ message: 'Invalid input' }, { status: 400 })
