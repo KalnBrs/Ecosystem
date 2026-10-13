@@ -111,6 +111,7 @@ export function useCreateLink() {
     onSuccess: (_result, { nodeId, targetNodeId }) => {
       queryClient.invalidateQueries({ queryKey: nodeKeys.detail(nodeId) });
       queryClient.invalidateQueries({ queryKey: nodeKeys.detail(targetNodeId) });
+      queryClient.invalidateQueries({ queryKey: nodeKeys.lists() });
     },
   });
 }
@@ -123,6 +124,7 @@ export function useDeleteLink() {
     onSuccess: (_result, { nodeId, targetNodeId }) => {
       queryClient.invalidateQueries({ queryKey: nodeKeys.detail(nodeId) });
       queryClient.invalidateQueries({ queryKey: nodeKeys.detail(targetNodeId) });
+      queryClient.invalidateQueries({ queryKey: nodeKeys.lists() });
     },
   });
 }
