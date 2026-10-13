@@ -1,7 +1,7 @@
 import type { Node, Task } from "@/lib/models"
 import type { TaskData } from "@/@types"
 
-// The diffrent types of energy for the tasks page
+// The different types of energy for the tasks page
 export type EnergyFilter = "all" | "deep" | "light" | "quick"
 
 /** Returns only active, incomplete task nodes. */
