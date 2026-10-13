@@ -18,5 +18,5 @@ export const PASSWORD_RULES: PasswordRule[] = [
 ]
 
 export function isStrongPassword(password: string): boolean {
-  return password.length <= PASSWORD_MAX_LENGTH && PASSWORD_RULES.every(rule => rule.test(password))
+  return new TextEncoder().encode(password).length <= PASSWORD_MAX_LENGTH && PASSWORD_RULES.every(rule => rule.test(password))
 }

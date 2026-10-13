@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Password updated" }, { status: 200 })
   } catch (error: unknown) {
-    const detail = error instanceof Error ? error.message : String(error)
-    return NextResponse.json({ message: "An error occurred while resetting the password: " + detail }, { status: 500 })
+    console.error("Password reset failed", error)
+    return NextResponse.json({ message: "An error occurred while resetting the password" }, { status: 500 })
   }
 }

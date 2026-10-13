@@ -1,5 +1,5 @@
 "use client"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 
 import styles from "../tasks.module.css"
@@ -45,9 +45,27 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
   
   const energy = task.energyLevel
 
-  const [now] = useState(() => Date.now())
+  const [now, setNow] = useState(() => Date.now())
   const [scheduleAnchor, setScheduleAnchor] = useState<DOMRect | null>(null)
   const [deleteAnchor, setDeleteAnchor] = useState<DOMRect | null>(null)
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    const scheduleNextMidnight = () => {
+      const currentTime = Date.now()
+      const nextMidnight = new Date(currentTime)
+      nextMidnight.setHours(24, 0, 0, 0)
+
+      timeoutId = setTimeout(() => {
+        setNow(Date.now())
+        scheduleNextMidnight()
+      }, nextMidnight.getTime() - currentTime)
+    }
+
+    scheduleNextMidnight()
+    return () => clearTimeout(timeoutId)
+  }, [])
   
 
   const timeAgo = useMemo(() => {
@@ -56,11 +74,22 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
     return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(days, "day")
   }, [task.updatedAt, now])
 
-  // Due dates are stored as UTC midnight, so format in UTC to avoid a day shift.
-  const dueLabel = useMemo(() => (
-      task.dueDate ? new Date(task.dueDate).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" }) : null
-    ), [task.dueDate]
-  )
+  // Due dates are stored as UTC midnight; compare calendar dates to avoid timezone shifts.
+  const dueLabel = useMemo(() => {
+    if (!task.dueDate) return null
+
+    const dueDay = Date.parse(task.dueDate.slice(0, 10))
+    const today = new Date(now)
+    const todayDay = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+    const daysFromToday = (dueDay - todayDay) / 86_400_000
+
+    if (daysFromToday >= -1 && daysFromToday <= 1) {
+      const relativeLabel = new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(daysFromToday, "day")
+      return relativeLabel.charAt(0).toUpperCase() + relativeLabel.slice(1)
+    }
+
+    return new Date(task.dueDate).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" })
+  }, [task.dueDate, now])
 
   // Both sides are calendar dates (due date is UTC midnight, today is local), so the diff is whole days.
   const dueStatus = useMemo(() => {
