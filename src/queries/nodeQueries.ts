@@ -72,6 +72,7 @@ export function useUpdateNode() {
     onError: (_error, _vars, context) => {
       context?.snapshot.forEach(([key, value]) => queryClient.setQueryData(key, value));
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: nodeKeys.all }),
     onSuccess: (updatedNode: Node) => {
       queryClient.setQueryData(nodeKeys.detail(updatedNode.id), updatedNode);
       queryClient.invalidateQueries({ queryKey: nodeKeys.lists() });
