@@ -27,6 +27,7 @@ export default function Home() {
 
   const handleCreateTask = (draft: CreateTaskDraft, options?: { openEditor?: boolean}) => {
     setCreateFailure(null)
+    setIsCreatingTask(false)
     setPendingCreateCount(count => count + 1)
     createNode({
       type: "task",
@@ -53,7 +54,6 @@ export default function Home() {
       },
       onSettled: () => setPendingCreateCount(count => count - 1),
     })
-    setIsCreatingTask(false)
   }
 
   const projectTitleById = useMemo(() => {
@@ -161,7 +161,7 @@ export default function Home() {
 
         {createFailure && (
           <p role="alert" className={`text-xs ${styles.createError}`}>
-            {`Couldn't create "{createFailure.draft.title}": {createFailure.message}`}
+            {`Couldn't create "${createFailure.draft.title}": ${createFailure.message}`}
           </p>
         )}
 
