@@ -4,10 +4,10 @@ import { useUndoableValue } from "./useUndoableValue";
 
 export { UNDO_WINDOW_MS } from "./useUndoableValue";
 
-export function useTaskChecks(initilizedCheckedValue: boolean = false) {
+export function useTaskChecks(initializedCheckedValue: boolean = false) {
   const { mutate: updateNode } = useUpdateNode();
   const { value: pendingUpdate, isPending: isPendingUndo, schedule, undo, commit } = useUndoableValue(
-    { taskId: "", completed: initilizedCheckedValue },
+    { taskId: "", completed: initializedCheckedValue },
     ({ taskId, completed }) => {
       if (taskId) updateNode({ nodeId: taskId, data: { type: "task", data: { completed } } });
     },

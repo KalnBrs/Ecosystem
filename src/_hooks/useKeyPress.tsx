@@ -13,7 +13,7 @@ type KeyCombo = {
  * Works for all commands, if defined by the call. 
  * 
  * Accepts undefined for meta, ctrl, and shift key. There is a default value of false on the 
- * varibales defined in targetConfig
+ * variables defined in targetConfig
  * @param targetConfig this is the defined key structure for the key command that is wanted
  * @param callback this is the callback method that is called when the targetConfig 
  * key command is pressed
