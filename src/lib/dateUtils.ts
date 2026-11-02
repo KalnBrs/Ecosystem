@@ -4,11 +4,7 @@ const relativeDateFormatter = new Intl.RelativeTimeFormat("en", {
   numeric: "auto",
 })
 
-/**
- * Represents the status of a task's due date.
- *
- * @typedef {"overdue" | "soon" | null} DueStatus
- */
+/** Status of a task's due date. */
 export type DueStatus = "overdue" | "soon" | null
 
 /**
@@ -17,8 +13,8 @@ export type DueStatus = "overdue" | "soon" | null
  * The date's local year, month, and day are used to create a UTC
  * timestamp at midnight. The time of day is discarded.
  *
- * @param {Date} date - The date whose local calendar day should be converted.
- * @returns {number} The UTC timestamp in milliseconds for that calendar day.
+ * @param date - The date whose local calendar day should be converted.
+ * @returns The UTC timestamp in milliseconds for that calendar day.
  */
 export function toUtcDay(date: Date): number {
   return Date.UTC(
@@ -35,9 +31,9 @@ export function toUtcDay(date: Date): number {
  * The target date is interpreted as a date-only value when provided
  * as a string. The reference date uses its local calendar day.
  *
- * @param {string | Date} targetDate - The target date to compare.
- * @param {Date} [fromDate=new Date()] - The reference date.
- * @returns {number} The number of calendar days between the dates.
+ * @param targetDate - The target date to compare. Strings are interpreted as date-only values.
+ * @param fromDate - The reference date; defaults to the current date.
+ * @returns The number of calendar days between the dates.
  * A negative value indicates a past date, zero indicates the same
  * calendar day, and a positive value indicates a future date.
  */
@@ -53,8 +49,8 @@ export function getCalendarDayDiff(targetDate: string | Date, fromDate: Date = n
  * Uses the English locale and automatically selects terms such as
  * "yesterday", "today", and "tomorrow" where applicable.
  *
- * @param {number} days - The number of days relative to the present.
- * @returns {string} The formatted relative-time label.
+ * @param days - The number of days relative to the present.
+ * @returns The formatted relative-time label.
  */
 export function formatRelativeDays(days: number): string {
   return relativeDateFormatter.format(days, "day")
@@ -66,11 +62,11 @@ export function formatRelativeDays(days: number): string {
  * Date-only strings in YYYY-MM-DD format are interpreted as UTC
  * midnight to avoid timezone-related date shifts.
  *
- * @param {string | Date} date - The date to format.
- * @param {string} [locale="en"] - The locale used for formatting.
- * @returns {string} The formatted date, such as "Oct 14".
+ * @param date - The date to format. Date-only strings are interpreted as UTC.
+ * @param locale - The locale used for formatting; defaults to English.
+ * @returns The formatted date, such as "Oct 14".
  */
-export function formatDate(date: string | Date, locale = "en"): string {
+export function formatDateShort(date: string | Date, locale = "en"): string {
   const parsed = date instanceof Date ? date : new Date(date.length === 10 ? `${date}T00:00:00Z` : date)
 
   return parsed.toLocaleDateString(locale, {
@@ -81,16 +77,33 @@ export function formatDate(date: string | Date, locale = "en"): string {
 }
 
 /**
+ * Formats a date as an ISO-style date-only value (YYYY-MM-DD).
+ * Date-only strings are interpreted at UTC midnight, matching `formatDateShort`.
+ *
+ * @param date - The date to format. Date-only strings are interpreted as UTC.
+ * @returns The date in YYYY-MM-DD format.
+ */
+export function formatDateLong(date: string | Date): string {
+  const parsed = date instanceof Date ? date : new Date(date.length === 10 ? `${date}T00:00:00Z` : date)
+
+  const year = parsed.getUTCFullYear()
+  const month = String(parsed.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(parsed.getUTCDate()).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
+}
+
+/**
  * Determines the status of a task based on its due date.
  *
  * Completed tasks and tasks without a due date have no status.
  * A date before today is "overdue". A date within the next three
  * calendar days, including today, is "soon".
  *
- * @param {string | null | undefined} dueDate - The task's due date.
- * @param {Date} [now=new Date()] - The reference date used for comparison.
- * @param {boolean} [isChecked=false] - Whether the task is completed.
- * @returns {DueStatus} The due-date status, or null if no status applies.
+ * @param dueDate - The task's due date, if any.
+ * @param now - The reference date used for comparison; defaults to now.
+ * @param isChecked - Whether the task is completed; defaults to false.
+ * @returns The due-date status, or null if no status applies.
  */
 export function getDueStatus(dueDate: string | null | undefined, now: Date = new Date(),isChecked = false): DueStatus {
   if (!dueDate || isChecked) return null
@@ -109,11 +122,9 @@ export function getDueStatus(dueDate: string | null | undefined, now: Date = new
  * The difference is rounded to the nearest 24-hour period before
  * being formatted. Future timestamps produce future-relative labels.
  *
- * @param {string | Date | null | undefined} updatedAt - The timestamp
- * to format.
- * @param {number | Date} [now=Date.now()] - The reference timestamp.
- * @returns {string | null} The relative-time label, or null when
- * no timestamp is provided.
+ * @param updatedAt - The timestamp to format, if any.
+ * @param now - The reference timestamp; defaults to the current time.
+ * @returns The relative-time label, or null when no timestamp is provided.
  */
 export function getTimeAgo(updatedAt: string | Date | null | undefined, now: number | Date = Date.now()): string | null {
   if (!updatedAt) return null
