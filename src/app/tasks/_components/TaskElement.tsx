@@ -13,7 +13,7 @@ import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
 import { useUndoableValue } from "@/_hooks/useUndoableValue"
 import { useDeleteNode } from "@/queries/nodeQueries"
 import type { EnergyLevel, TaskData } from "@/@types"
-import { formatDate, formatRelativeDays, getCalendarDayDiff, getDueStatus, getTimeAgo } from "@/lib/dateUtils"
+import { formatDateShort, formatRelativeDays, getCalendarDayDiff, getDueStatus, getTimeAgo } from "@/lib/dateUtils"
 import { capitalize } from "@/lib/textUtils"
 
 const energyLabels: Record<EnergyLevel, string> = {
@@ -84,7 +84,7 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
       return capitalize(formatRelativeDays(daysFromToday))
     }
 
-    return formatDate(task.dueDate)
+    return formatDateShort(task.dueDate)
   }, [task.dueDate, now])
 
   // Both sides are calendar dates (due date is UTC midnight, today is local), so the diff is whole days.
