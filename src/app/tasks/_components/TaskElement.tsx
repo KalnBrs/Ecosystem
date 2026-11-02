@@ -13,6 +13,8 @@ import { useTaskChecks, UNDO_WINDOW_MS } from "@/_hooks/useTaskChecks"
 import { useUndoableValue } from "@/_hooks/useUndoableValue"
 import { useDeleteNode } from "@/queries/nodeQueries"
 import type { EnergyLevel, TaskData } from "@/@types"
+import { formatDate, formatRelativeDays, getCalendarDayDiff, getDueStatus, getTimeAgo } from "@/lib/dateUtils"
+import { capitalize } from "@/lib/textUtils"
 
 const energyLabels: Record<EnergyLevel, string> = {
   deep: "DEEP",
@@ -68,43 +70,27 @@ export default function TaskElement({ task, projects, isSelected, onSelect, onCl
   }, [])
   
 
-  const timeAgo = useMemo(() => {
-    if (!task.updatedAt) return null
-    const days = Math.round((new Date(task.updatedAt).getTime() - now) / (1000 * 60 * 60 * 24))
-    return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(days, "day")
-  }, [task.updatedAt, now])
+  const timeAgo = useMemo(() => (
+    getTimeAgo(task.updatedAt, now)
+  ), [task.updatedAt, now])
 
   // Due dates are stored as UTC midnight; compare calendar dates to avoid timezone shifts.
   const dueLabel = useMemo(() => {
     if (!task.dueDate) return null
 
-    const dueDay = Date.parse(task.dueDate.slice(0, 10))
-    const today = new Date(now)
-    const todayDay = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
-    const daysFromToday = (dueDay - todayDay) / 86_400_000
+    const daysFromToday = getCalendarDayDiff(task.dueDate, new Date(now))
 
     if (daysFromToday >= -1 && daysFromToday <= 1) {
-      const relativeLabel = new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(daysFromToday, "day")
-      return relativeLabel.charAt(0).toUpperCase() + relativeLabel.slice(1)
+      return capitalize(formatRelativeDays(daysFromToday))
     }
 
-    return new Date(task.dueDate).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" })
+    return formatDate(task.dueDate)
   }, [task.dueDate, now])
 
   // Both sides are calendar dates (due date is UTC midnight, today is local), so the diff is whole days.
-  const dueStatus = useMemo(() => {
-    if (!task.dueDate || isChecked) {
-      return null
-    } 
-
-    const daysLeft = (Date.parse(task.dueDate.slice(0, 10)) - Date.parse(new Date(now).toLocaleDateString("sv"))) / 86_400_000
-
-    if (daysLeft < 0) {
-      return "overdue"
-    }  else {
-      return daysLeft < 3 ? "soon" : null
-    }
-  }, [task.dueDate, isChecked, now])
+  const dueStatus = useMemo(() => (
+    getDueStatus(task.dueDate, new Date(now), isChecked)
+  ), [task.dueDate, isChecked, now])
 
   const dueClass = dueStatus === "overdue" ? styles.overdue : dueStatus === "soon" ? styles.dueSoon : ""
 

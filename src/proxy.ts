@@ -5,11 +5,31 @@ import { ratelimit } from "@/lib/rateLimit";
 import { AUTH_ROUTES, DEFAULT_REDIRECT } from "@/_components/Auth/authRoutes";
 
 async function limitApiRequest(request: NextRequest) {
+  // SessionProvider polls this read-only endpoint; don't spend the shared API
+  // rate-limit budget on routine session checks.
+  if (request.nextUrl.pathname === "/api/auth/session") {
+    return NextResponse.next();
+  }
+
   // Extract client IP address securely
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ?? "127.0.0.1";
 
-  // Evaluate rate limit
-  const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+  // Evaluate rate limit. If Upstash is unavailable, return a deliberate JSON
+  // response instead of allowing an HTML 500 to break auth/client JSON parsing.
+  let result;
+  try {
+    result = await ratelimit.limit(ip);
+  } catch (error) {
+    console.error("API rate limiter unavailable:", error);
+    // Fail open in dev so a missing Redis doesn't take down every API route.
+    if (process.env.NODE_ENV !== "production") return NextResponse.next();
+    return NextResponse.json(
+      { error: "Request protection is temporarily unavailable. Please try again shortly." },
+      { status: 503 }
+    );
+  }
+
+  const { success, limit, reset, remaining } = result;
 
   if (!success) {
     return new NextResponse(
