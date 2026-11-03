@@ -8,6 +8,12 @@
 import authReducer, { authSlice } from "@/store/slices/authSlice";
 import focusReducer, { focusSlice } from "@/store/slices/focusSlice";
 import morning3Reducer, { morning3Slice } from "@/store/slices/morning3Slice";
+import {
+  selectMorning3,
+  selectPickedTaskIds,
+  selectPicksLockedForDate,
+  selectMorning3SelectionComplete,
+} from "@/store/slices/morning3Selectors";
 import dailyResetReducer, { dailyResetSlice } from "@/store/slices/dailyResetSlice";
 
 const unknownAction = { type: "unknown/action" };
@@ -86,6 +92,20 @@ describe("morning3Slice", () => {
       selectionComplete: true,
     };
     expect(morning3Reducer(state, unknownAction)).toBe(state);
+  });
+
+  it("selects Morning 3 state and its fields from the root state", () => {
+    const morning3 = {
+      picksLockedForDate: "2026-01-01",
+      pickedTaskIds: ["a", "b"],
+      selectionComplete: true,
+    };
+    const state = { morning3 } as import("@/store/store").RootState;
+
+    expect(selectMorning3(state)).toBe(morning3);
+    expect(selectPickedTaskIds(state)).toEqual(["a", "b"]);
+    expect(selectPicksLockedForDate(state)).toBe("2026-01-01");
+    expect(selectMorning3SelectionComplete(state)).toBe(true);
   });
 });
 
